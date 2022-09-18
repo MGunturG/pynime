@@ -71,8 +71,8 @@ class PyNime:
     >>> anime_detailsObj = GetAnimeDetails("http://gogoanime.ee/....", desired_output="object")
     >>> print(anime_detailObj.genres)
     ['Romance', 'Ecchi']
-    
-    
+    >>>
+    >>>
     >>> anime_detailsDict = GetAnimeDetails("http://gogoanime.ee/....", desired_output="dict")
     >>> print(anime_detailDict)
     {
@@ -139,7 +139,7 @@ class PyNime:
 
   def GetAnimeEps(self, anime_category_link: str) -> list:
     '''
-    Get total of anime episode available and links per episode
+    Get total of anime episode available and links per episode.
 
     Expected output (example):
     [
@@ -180,16 +180,6 @@ class PyNime:
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
 
-    For this function data as :
-    1. auth 
-    2. token
-    are needed. This data are mandatory! Here is the Example:
-
-    token = {
-        "auth": (your auth token in string),
-        "gogoanime": (your gogoanime token in string),
-    }
-
     Expected output in dictonary (example):
     {
       "640x360": "https://gogodownload.net/download.php?url=aHR0cHM6LyAdeqwrwedffryretgsdFrsftrsvfsfsr9jZG54MDAawehyfcghysfdsDGDYdgdsfsdfwstdgdsgtertQuYW5pY2FjaGUubmV0L3VzZXIxMzQyL2EzNTBiYWJjZWU4OGQ3MTRmYjcxNTEyMGJlNjZmYmI2L0VQLjYudjAuMTY2MDgzNjAxMS4zNjBwLm1wND90b2tlbj1wTndHOXNGWnU1eWZISEFBeEdrM093JmV4cGlyZXM9MTY2MzQxMzU3MyZpZD0xOTA2OTMmdGl0bGU9KDY0MHgzNjAtZ29nb2FuaW1lKWhhdGFyYWt1LW1hb3Utc2FtYS0ybmQtc2Vhc29uLWVwaXNvZGUtNi5tcDQ=",
@@ -202,7 +192,6 @@ class PyNime:
     try:
       download_links = dict()
 
-      # Free Auth Token
       token = {
           "auth": self.auth_token,
           "gogoanime": self.gogoanime_token
