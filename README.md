@@ -3,9 +3,9 @@ A (simple) Python3 script to scrape GoGoAnime.
 
 ToDo:
 - [x] Restructure code base to using class code base
-- [] Make downloader
-- [] Play on player like mpv or vlc
-- [] Get top current airing anime
+- Make downloader
+- Play on player like mpv or vlc
+- Get top current airing anime
 
 I am not making this to able search by genre, knowing popular anime (all the time/top ranking anime), and so on. Main purpose of this script are "I want to watch anime on my installed video player on my computer.", that's it.
 
