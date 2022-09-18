@@ -3,6 +3,8 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
+from data_classes import *
+
 '''
 Client also need to install lxml library
 
@@ -14,16 +16,20 @@ or visit https://pypi.org/project/lxml/ and https://lxml.de/installation.html
 baseURL = "https://gogoanime.ee"
 
 
-def SearchAnime(anime_title: str) -> list:
+def SearchAnime(anime_title: str) -> SearchResultObj:
   '''
   Search anime on given title.
-  Output is list of animes.
+  Output is list of animes in object.
 
-  Expected output (example):
-  [
-    "Yofukashi No Uta", 
-    "Yofukashi No Uta (Dub)",
-  ]
+  Example of usage:
+  >>> result = SearchAnime("Yofukashi no Uta")
+  1 | Yofukashi no Uta
+  2 | Yofukashi no Uta (Dub)
+  >>> print(len(result))
+  2
+  >>> result[0].title
+  'Yofukashi No Uta'
+
   '''
   anime_links = []
   anime_title = anime_title.replace(" ", "%20")
@@ -34,48 +40,86 @@ def SearchAnime(anime_title: str) -> list:
   result = soup.find_all("div", {"class":"img"})
 
   for idx, i in enumerate(result):
-    anime_links.append(f'{baseURL}{i.contents[1].get("href")}')
+    # anime_links.append(f'{baseURL}{i.contents[1].get("href")}')
+    anime_links.append(SearchResultObj(title=f'{i.contents[1].get("title")}', url=f'{baseURL}{i.contents[1].get("href")}'))
     print(f'{idx+1} | {i.contents[1].get("title")}')
 
   return anime_links
 
 
-def GetAnimeDetails(anime_category_link: str) -> dict:
+def GetAnimeDetails(anime_category_link: str, desired_output: str):
   '''
-  Get anime info/detail 
-  Usage :
-  Example of anime_category_link input
-  anime_category_link = https://www1.gogoanime.ee/category/hataraku-maou-sama-2nd-season
+  Get anime info/details.
 
-  Expected output in dictonary (example):
+  Usage of desired_output:
+  1. desired_output = "dict"
+  2. desired_output = "object"
+
+  If using desired_output as "object" you no need to parse the dictonary,
+  just call .title to get anime title
+
+  Example :
+  >>> anime_detailsObj = GetAnimeDetails("http://gogoanime.ee/....", desired_output="object")
+  >>> print(anime_detailObj.genres)
+  ['Romance', 'Ecchi']
+  
+  
+  >>> anime_detailsDict = GetAnimeDetails("http://gogoanime.ee/....", desired_output="dict")
+  >>> print(anime_detailDict)
   {
-    "image_url": "https://gogocdn.net/cover/hataraku-maou-sama-2nd-season.png",
-    "type": "Summer 2022 Anime",
+    "season": "Summer 2022 Anime",
     "synopsis": "Plot Summary: Second season of Hataraku Maou-sama!",
     "genres": ["Comedy", "Demons", "Fantasy", "Romance", "Supernatural"],
-    "release_year": "2022",
+    "release_year": 2022,
     "status": "Ongoing",
+    "total_episode": 12,
+    "image_url": "https://gogocdn.net/cover/hataraku-maou-sama-2nd-season.png",
   }
+
   '''
+
   detail_page = requests.get(anime_category_link)
   soup = BeautifulSoup(detail_page.text, "html.parser")
   info_body = soup.find("div", {"class": "anime_info_body_bg"})
   image_url = info_body.find("img")["src"]
   other_info = info_body.find_all("p", {"class": "type"})
 
-  anime_info_dict = {
-        "image_url": image_url,
-        "type": other_info[0].text.replace("\n", "").replace("Type: ", ""),
-        "synopsis": other_info[1].text.replace("\n", ""),
-        "genres": [
-            x["title"]
-            for x in BeautifulSoup(str(other_info[2]), "html.parser").find_all("a")
-        ],
-        "release_year": other_info[3].text.replace("Released: ", ""),
-        "status": other_info[4].text.replace("\n", "").replace("Status: ", ""),
+  season = other_info[0].text.replace("\n", "").replace("Type: ", "")
+  synopsis = other_info[1].text.replace("\n", "")
+  genres = [
+    x["title"]
+    for x in BeautifulSoup(str(other_info[2]), "html.parser").find_all("a")
+  ]
+  released = other_info[3].text.replace("Released: ", "")
+  status = other_info[4].text.replace("\n", "").replace("Status: ", "")
+  total_episode = len(GetAnimeEps(anime_category_link))
+  image_url = image_url
+
+  if desired_output == "dict":
+    anime_info_dict = {
+        "season": season,
+        "synopsis": synopsis,
+        "genres": genres,
+        "release_year": released,
+        "status": status,
+        "total_episode": total_episode,
+        "image_url": image_url
     }
 
-  return anime_info_dict
+    return anime_info_dict
+
+  else:
+    anime_info_object = AnimeDetailsObj(
+      season = season,
+      synopsis = synopsis,
+      genres= genres,
+      released= released,
+      status= status,
+      total_episode= total_episode,
+      image_url = image_url
+    )
+
+    return anime_info_object
 
 
 def GetAnimeEps(anime_category_link: str) -> list:
@@ -111,7 +155,7 @@ def GetAnimeEps(anime_category_link: str) -> list:
   return eps_list
 
 
-def GetDownloadURL(anime_episode_link: str, auth_token: str, gogoanime_token: str) -> dict:
+def GetDownloadURL(anime_episode_link: str) -> dict:
   '''
   Get download link on given anime episode link. Example of anime episode link
   anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
@@ -119,7 +163,12 @@ def GetDownloadURL(anime_episode_link: str, auth_token: str, gogoanime_token: st
   For this function data as :
   1. auth 
   2. token
-  are needed. This data are mandatory!
+  are needed. This data are mandatory! Here is the Example:
+
+  token = {
+      "auth": (your auth token in string),
+      "gogoanime": (your gogoanime token in string),
+  }
 
   Expected output in dictonary (example):
   {
@@ -130,12 +179,16 @@ def GetDownloadURL(anime_episode_link: str, auth_token: str, gogoanime_token: st
   }
 
   '''
+
   download_links = dict()
-  cookies = {
-      "auth":f'{auth_token}',
-      "gogoanime":f'{gogoanime_token}',
+
+  # Free Auth Token
+  token = {
+      "auth":"Tmfe5Hkx6rIDZDsahKL3zaBF%2BoPUl1s561%2F9P%2FzIKGkT9WCB%2F4%2FbY56dYyRIb7qfOT0HI4XHT1GxDWwGudoK2Q%3D%3D",
+      "gogoanime":"scluq0bchc8ebkph4gep514gd7",
   }
-  r = requests.get(anime_episode_link, cookies=cookies)
+
+  r = requests.get(anime_episode_link, cookies=token)
   soup = BeautifulSoup(r.content, "lxml")
   download_div = soup.find("div", {'class': 'cf-download'}).findAll('a')
 
