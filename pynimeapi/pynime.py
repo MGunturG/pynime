@@ -56,16 +56,16 @@ class PyNime:
       print("Network Error.")
 
 
-  def GetAnimeDetails(self, anime_category_link: str, desired_output: str):
+  def GetAnimeDetails(self, anime_category_link: str, desired_output="object"):
     '''
     Get anime info/details.
 
     Usage of desired_output:
     1. desired_output = "dict"
-    2. desired_output = "object"
+    2. desired_output = "object" (default)
 
     If using desired_output as "object" you no need to parse the dictonary,
-    just call .title to get anime title
+    just call .title to get anime title.
 
     Example :
     >>> anime_detailsObj = GetAnimeDetails("http://gogoanime.ee/....", desired_output="object")
@@ -175,7 +175,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def GetDownloadURL(self, anime_episode_link: str) -> dict:
+  def GetDownloadLink(self, anime_episode_link: str) -> dict:
     '''
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
