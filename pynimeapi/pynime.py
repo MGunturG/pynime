@@ -5,33 +5,27 @@ from bs4 import BeautifulSoup
 
 from pynimeapi.data_classes import *
 
-'''
-Client also need to install lxml library
-
-Installaion: pip install lxml
-
-or visit https://pypi.org/project/lxml/ and https://lxml.de/installation.html
-'''
-
 class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.ee"):
     self.auth_token = auth
     self.gogoanime_token = gogoanime
     self.baseURL = base_url
 
-  def SearchAnime(self, anime_title: str) -> SearchResultObj:
+  def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
     Search anime on given title.
-    Output is list of animes in object.
+    Output is list of animes and their url in object.
 
     Example of usage:
-    >>> result = SearchAnime("Yofukashi no Uta")
+    >>> from pynimeapi import PyNime
+    >>> api = PyNime("auth_token", "gogoanime_token")
+    >>> result = api.search_anime("Yofukashi no Uta")
     1 | Yofukashi no Uta
     2 | Yofukashi no Uta (Dub)
-    >>> print(len(result))
-    2
     >>> result[0].title
     'Yofukashi No Uta'
+    >>> result[0].url
+    'https://gogoanime.ee/category/yofukashi-no-uta'
 
     '''
     try:
@@ -49,31 +43,39 @@ class PyNime:
         print(f'{idx+1} | {i.contents[1].get("title")}')
 
       if not anime_result:
-        print("Anime not found!")
+        print("[!] Anime not found!")
       else:
         return anime_result
     except requests.exceptions.ConnectionError:
       print("Network Error.")
 
 
-  def GetAnimeDetails(self, anime_category_link: str, desired_output="object"):
+  def get_details(self, anime_category_link: str, desired_output="object"):
     '''
     Get anime info/details.
+    .season        : season of anime aired
+    .synopsis      : plot of anime
+    .genres        : genres
+    .released      : year of released
+    .status        : status, ongoing or finished
+    .total_episode : total of all episode
+    .image_url     : anime cover image
 
     Usage of desired_output:
     1. desired_output = "dict"
     2. desired_output = "object" (default)
 
-    If using desired_output as "object" you no need to parse the dictonary,
-    just call .title to get anime title.
+    If using desired_output as "object" you no need to parse the dictonary.
 
-    Example :
-    >>> anime_detailsObj = GetAnimeDetails("http://gogoanime.ee/....", desired_output="object")
+    Example of usage:
+    >>> from pynimeapi import PyNime
+    >>> api = PyNime("auth_token", "gogoanime_token")
+    >>> anime_detailsObj = api.get_details("http://gogoanime.ee/....", desired_output="object")
     >>> print(anime_detailObj.genres)
     ['Romance', 'Ecchi']
     >>>
     >>>
-    >>> anime_detailsDict = GetAnimeDetails("http://gogoanime.ee/....", desired_output="dict")
+    >>> anime_detailsDict = api.get_details("http://gogoanime.ee/....", desired_output="dict")
     >>> print(anime_detailDict)
     {
       "season": "Summer 2022 Anime",
@@ -86,7 +88,6 @@ class PyNime:
     }
 
     '''
-
     try:
       detail_page = requests.get(anime_category_link)
       soup = BeautifulSoup(detail_page.text, "html.parser")
@@ -102,7 +103,7 @@ class PyNime:
       ]
       released = other_info[3].text.replace("Released: ", "")
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
-      total_episode = len(self.GetAnimeEps(anime_category_link))
+      total_episode = len(self.get_eps_links(anime_category_link))
       image_url = image_url
 
       if desired_output == "dict":
@@ -137,7 +138,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def GetAnimeEps(self, anime_category_link: str) -> list:
+  def get_eps_links(self, anime_category_link: str) -> list:
     '''
     Get total of anime episode available and links per episode.
 
@@ -175,18 +176,20 @@ class PyNime:
       print("Network Error.")
 
 
-  def GetDownloadLink(self, anime_episode_link: str) -> DownloadLinkObj:
+  def get_download_link(self, anime_episode_link: str) -> DownloadLinkObj:
     '''
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
 
-    Expected output in dictonary (example):
-    {
-      "640x360": "https://gogodownload.net/download.php?url=aHR0cHM6LyAdeqwrwedffryretgsdFrsftrsvfsfsr9jZG54MDAawehyfcghysfdsDGDYdgdsfsdfwstdgdsgtertQuYW5pY2FjaGUubmV0L3VzZXIxMzQyL2EzNTBiYWJjZWU4OGQ3MTRmYjcxNTEyMGJlNjZmYmI2L0VQLjYudjAuMTY2MDgzNjAxMS4zNjBwLm1wND90b2tlbj1wTndHOXNGWnU1eWZISEFBeEdrM093JmV4cGlyZXM9MTY2MzQxMzU3MyZpZD0xOTA2OTMmdGl0bGU9KDY0MHgzNjAtZ29nb2FuaW1lKWhhdGFyYWt1LW1hb3Utc2FtYS0ybmQtc2Vhc29uLWVwaXNvZGUtNi5tcDQ=",
-      "854x480": "https://gogodownload.net/download.php?url=aHR0cHM6LyAawehyfcghysfdsDGDYdgdsfsdfwstdgdsgtert9AdrefsdsdfwerFrefdsfrersfdsrfer36343534jZG54MDQuYW5pY2FjaGUubmV0L3VzZXIxMzQyL2EzNTBiYWJjZWU4OGQ3MTRmYjcxNTEyMGJlNjZmYmI2L0VQLjYudjAuMTY2MDgzNjAxMS40ODBwLm1wND90b2tlbj1sbXhRanFpNUQ1SldWaG5aTmNxYmhnJmV4cGlyZXM9MTY2MzQxMzU3MyZpZD0xOTA2OTMmdGl0bGU9KDg1NHg0ODAtZ29nb2FuaW1lKWhhdGFyYWt1LW1hb3Utc2FtYS0ybmQtc2Vhc29uLWVwaXNvZGUtNi5tcDQ=",
-      "1280x720": "https://gogodownload.net/download.php?url=aHR0cHM6LyAdeqwrwedffryretgsdFrsftrsvfsfsr9jZG54MDURASDGHUSRFSJGYfdsffsderFStewthsfSFtrftesdfQuYW5pY2FjaGUubmV0L3VzZXIxMzQyL2EzNTBiYWJjZWU4OGQ3MTRmYjcxNTEyMGJlNjZmYmI2L0VQLjYudjAuMTY2MDgzNjAxMS43MjBwLm1wND90b2tlbj1aczVfYVhkQ0RDRXlqa0VEZnVRaV9BJmV4cGlyZXM9MTY2MzQxMzU3MyZpZD0xOTA2OTMmdGl0bGU9KDEyODB4NzIwLWdvZ29hbmltZSloYXRhcmFrdS1tYW91LXNhbWEtMm5kLXNlYXNvbi1lcGlzb2RlLTYubXA0",
-      "1920x1080": "https://gogodownload.net/download.php?url=aHR0cHM6LyAdeqwrwedffryretgsdFrsftrsvfsfsr9jZG54MDAdrefsdsdfwerFrefdsfrersfdsrfer36343534QuYW5pY2FjaGUubmV0L3VzZXIxMzQyL2EzNTBiYWJjZWU4OGQ3MTRmYjcxNTEyMGJlNjZmYmI2L0VQLjYudjAuMTY2MDgzNjAxMS4xMDgwcC5tcDQ/dG9rZW49VjZXdG1MR29lSzhZTS1iSU9fV3VqdyZleHBpcmVzPTE2NjM0MTM1NzMmaWQ9MTkwNjkzJnRpdGxlPSgxOTIweDEwODAtZ29nb2FuaW1lKWhhdGFyYWt1LW1hb3Utc2FtYS0ybmQtc2Vhc29uLWVwaXNvZGUtNi5tcDQ=",
-    }
+    To get download link of desired resolution, use:
+    .link_360 to get 360p download link
+    .link_480 to get 480p download link
+    and so on...
+
+    Example of usage:
+    >>> download_link = api.get_download_link("https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6")
+    >>> download_link.link_360
+    https://gogodownload.net/download.php?url=.....long url.....
 
     '''
     try:
