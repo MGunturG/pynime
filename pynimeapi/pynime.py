@@ -175,7 +175,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def GetDownloadLink(self, anime_episode_link: str) -> dict:
+  def GetDownloadLink(self, anime_episode_link: str) -> DownloadLinkObj:
     '''
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
@@ -190,8 +190,7 @@ class PyNime:
 
     '''
     try:
-      download_links = dict()
-
+      download_links = DownloadLinkObj()
       token = {
           "auth": self.auth_token,
           "gogoanime": self.gogoanime_token
@@ -202,7 +201,21 @@ class PyNime:
       download_div = soup.find("div", {'class': 'cf-download'}).findAll('a')
 
       for data in download_div:
-        download_links[re.sub(r"[\n\t\s]*","",data.string)] = data['href']
+        video_resulotion = re.search("x([0-9]+)", re.sub(r"[\n\t\s]*","",data.string)).group(1)
+
+        if video_resulotion == "360":
+          download_links.link_360=f'{data["href"]}'
+
+        elif video_resulotion == "480":
+          download_links.link_480=f'{data["href"]}'
+
+        elif video_resulotion == "720":
+          download_links.link_720=f'{data["href"]}'
+
+        elif video_resulotion == "1080":
+          download_links.link_1080=f'{data["href"]}'
+
+        # download_links[re.sub(r"[\n\t\s]*","",data.string)] = data['href']
 
       return download_links
     except AttributeError:
