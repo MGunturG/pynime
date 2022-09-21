@@ -9,7 +9,7 @@ class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.ee"):
     self.auth_token = auth
     self.gogoanime_token = gogoanime
-    self.baseURL = base_url
+    self.baseURL = base_url    
 
   def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
@@ -38,7 +38,6 @@ class PyNime:
       result = soup.find_all("div", {"class":"img"})
 
       for idx, i in enumerate(result):
-        # anime_links.append(f'{baseURL}{i.contents[1].get("href")}')
         anime_result.append(SearchResultObj(title=f'{i.contents[1].get("title")}', url=f'{self.baseURL}{i.contents[1].get("href")}'))
         print(f'{idx+1} | {i.contents[1].get("title")}')
 
@@ -58,7 +57,7 @@ class PyNime:
     .genres        : genres
     .released      : year of released
     .status        : status, ongoing or finished
-    .total_episode : total of all episode
+    # .total_episode : total of all episode (we not use this for a moment)
     .image_url     : anime cover image
 
     Usage of desired_output:
@@ -83,7 +82,7 @@ class PyNime:
       "genres": ["Comedy", "Demons", "Fantasy", "Romance", "Supernatural"],
       "release_year": 2022,
       "status": "Ongoing",
-      "total_episode": 12,
+      # "total_episode": 12,
       "image_url": "https://gogocdn.net/cover/hataraku-maou-sama-2nd-season.png",
     }
 
@@ -103,7 +102,7 @@ class PyNime:
       ]
       released = other_info[3].text.replace("Released: ", "")
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
-      total_episode = len(self.get_eps_links(anime_category_link))
+      # total_episode = len(self.get_eps_links(anime_category_link))
       image_url = image_url
 
       if desired_output == "dict":
@@ -113,7 +112,7 @@ class PyNime:
             "genres": genres,
             "release_year": released,
             "status": status,
-            "total_episode": total_episode,
+            # "total_episode": total_episode,
             "image_url": image_url
         }
 
@@ -126,7 +125,7 @@ class PyNime:
           genres= genres,
           released= released,
           status= status,
-          total_episode= total_episode,
+          # total_episode= total_episode,
           image_url = image_url
         )
 
@@ -218,10 +217,67 @@ class PyNime:
         elif video_resulotion == "1080":
           download_links.link_1080=f'{data["href"]}'
 
-        # download_links[re.sub(r"[\n\t\s]*","",data.string)] = data['href']
-
       return download_links
     except AttributeError:
       print("Invalid argument given!")
     except requests.exceptions.ConnectionError:
       print("Network Error.")
+
+
+  def fast_query(self, title: str, episode: int, resolution: int):
+    '''
+    Fast query to search anime.
+    Initialy just for debuging, but I found this function really usefull LOL.
+    '''
+    search_anime = self.search_anime(title)
+
+    if search_anime:
+      print()
+      print("[?] Default selection result are 1.")
+      print("[>] 1 Selected. OK!")
+      print()
+      detail_anime = self.get_details(search_anime[0].url)
+      eps = self.get_eps_links(search_anime[0].url)
+      if (episode > len(eps) or episode==0):
+        print(f"[!] Unfortunately episode {episode} not released yet.")
+        print(f"[!] Latest episode is episode {len(eps)}.")
+        return
+    else:
+      return
+
+    # Print details of anime
+    print("[+] =========== Details ===========")
+    print(f"[>] {search_anime[0].title}")
+    print(f"[>] {detail_anime.season}")
+    print(f"[>] {detail_anime.synopsis}")
+    print(f"[>] {detail_anime.genres}")
+    print(f"[>] {detail_anime.released}")
+    print(f"[>] {detail_anime.status}")
+    print(f"[>] Total Episode: {len(eps)}")
+    print()
+
+    vid = self.get_download_link(eps[episode-1])
+
+    if resolution == 360:
+      if vid.link_360 == None:
+        print("[!] Selected resolution not available.")
+      else:
+        print(f'[>] Link for {resolution}p : {vid.link_360}')
+
+    if resolution == 480:
+      if vid.link_480 == None:
+        print("[!] Selected resolution not available.")
+      else:
+        print(f'[>] Link for {resolution}p : {vid.link_480}')
+
+    if resolution == 720:
+      if vid.link_720 == None:
+        print("[!] Selected resolution not available.")
+      else:
+        print(f'[>] Link for {resolution}p : {vid.link_720}')
+
+    if resolution == 1080:
+      if vid.link_1080 == None:
+        print("[!] Selected resolution not available.")
+      else:
+        print(f'[>] Link for {resolution}p : {vid.link_1080}')
