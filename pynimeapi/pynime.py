@@ -4,6 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from pynimeapi.data_classes import *
+from pynimeapi.downloader.http_downloader import *
+# from pynimeapi.downloader.pysmartdl import *
 
 class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.ee"):
@@ -263,21 +265,25 @@ class PyNime:
         print("[!] Selected resolution not available.")
       else:
         print(f'[>] Link for {resolution}p : {vid.link_360}')
+        return vid.link_360
 
     if resolution == 480:
       if vid.link_480 == None:
         print("[!] Selected resolution not available.")
       else:
         print(f'[>] Link for {resolution}p : {vid.link_480}')
+        return vid.link_480
 
     if resolution == 720:
       if vid.link_720 == None:
         print("[!] Selected resolution not available.")
       else:
         print(f'[>] Link for {resolution}p : {vid.link_720}')
+        return vid.link_720
 
     if resolution == 1080:
       if vid.link_1080 == None:
         print("[!] Selected resolution not available.")
       else:
         print(f'[>] Link for {resolution}p : {vid.link_1080}')
+        return vid.link_1080
