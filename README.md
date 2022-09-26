@@ -3,7 +3,7 @@ A (simple) Python3 script to scrape GoGoAnime.
 
 ToDo:
 - [x] Restructure code base to using class code base
-- Make downloader
+- Make downloader (I'm working on it!!!)
 - Play on player like mpv or vlc
 - Get top current airing anime
 
