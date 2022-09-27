@@ -15,7 +15,7 @@ class HTTPDownloader:
 		This function will check if file already downloaded or not.
 
 		'''
-		saved_filename = f'{saved_filename}.mp4'
+		saved_filename = f'{saved_filename}.mp4' # all videos uploaded on gogoanime is mp4 format
 		with requests.get(source, headers=self.headers, stream=True) as r:
 			if r.status_code == 200:
 				print("Link available.")
@@ -39,7 +39,7 @@ class HTTPDownloader:
 		I recommend user to copy link download and download the file using-
 		-external downloader such Internet Download Manager (IDM).
 		'''
-		download_filename = f'{save_filename}.mp4'
+		download_filename = f'{save_filename}.mp4' # all videos uploaded on gogoanime is mp4 format
 		with requests.get(source, headers=self.headers, stream=True) as r:
 			r.raise_for_status()
 			file_size = r.headers.get('content-length')

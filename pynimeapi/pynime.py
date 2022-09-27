@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from pynimeapi.data_classes import *
-from pynimeapi.downloader.http_downloader import *
+from pynimeapi.downloader.http_downloader import HTTPDownloader
 # from pynimeapi.downloader.pysmartdl import *
 
 class PyNime:

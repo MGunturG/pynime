@@ -33,8 +33,7 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
 ```
 ###
 >**Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanime.ee
@@ -47,8 +46,7 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
     
 search_result = api.search_anime("yofukashi no uta")
 
@@ -74,16 +72,15 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
     
 search_result = api.search_anime("yofukashi no uta")
 
-details = api.get_details(search_result[0].url, desired_output='object')
+details = api.get_details(search_result[0].url, desired_output = 'object')
 print(details.genres)
 print(details.status) # and more...
 
-details = api.get_details(search_result[0].url, desired_output='dict')
+details = api.get_details(search_result[0].url, desired_output = 'dict')
 print(details) # print anime details in dictonary.
 ```
 >**Note:** `get_details` need two input argument.
@@ -98,8 +95,7 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
     
 search_result = api.search_anime("yofukashi no uta")
 
@@ -122,8 +118,7 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
     
 search_result = api.search_anime("yofukashi no uta")
 
@@ -144,10 +139,9 @@ from pynimeapi import PyNime
 api = PyNime(
     auth = "Your auth token",
     gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee"
-    )
+    base_url = "https://gogoanime.ee")
     
-result = api.fast_query("yofukashi no uta", episode=12, resolution=480)
+result = api.fast_query("yofukashi no uta", episode = 12, resolution = 480)
 print(result)
 ```
 >**Note:** Function will print the possible anime search results (default selection is result number 1), details of anime, and will return download/streamable link for desired episode and resolution. If desired resolution or episode not available, it will return `None`.
