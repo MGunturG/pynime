@@ -13,21 +13,11 @@ class PyNime:
     self.gogoanime_token = gogoanime
     self.baseURL = base_url    
 
+
   def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
     Search anime on given title.
     Output is list of animes and their url in object.
-
-    Example of usage:
-    >>> from pynimeapi import PyNime
-    >>> api = PyNime("auth_token", "gogoanime_token")
-    >>> result = api.search_anime("Yofukashi no Uta")
-    1 | Yofukashi no Uta
-    2 | Yofukashi no Uta (Dub)
-    >>> result[0].title
-    'Yofukashi No Uta'
-    >>> result[0].url
-    'https://gogoanime.ee/category/yofukashi-no-uta'
 
     '''
     try:
@@ -40,53 +30,31 @@ class PyNime:
       result = soup.find_all("div", {"class":"img"})
 
       for idx, i in enumerate(result):
-        anime_result.append(SearchResultObj(title=f'{i.contents[1].get("title")}', url=f'{self.baseURL}{i.contents[1].get("href")}'))
+        anime_result.append(
+          SearchResultObj(title=f'{i.contents[1].get("title")}', 
+          url=f'{self.baseURL}{i.contents[1].get("href")}'))
+
         print(f'{idx+1} | {i.contents[1].get("title")}')
 
       if not anime_result:
         print("[!] Anime not found!")
       else:
         return anime_result
+
     except requests.exceptions.ConnectionError:
       print("Network Error.")
 
 
   def get_details(self, anime_category_link: str, desired_output="object"):
     '''
-    Get anime info/details.
+    Get basic anime info/details.
+    Output is an object or dictonary. Output defined by user.
     .season        : season of anime aired
     .synopsis      : plot of anime
     .genres        : genres
     .released      : year of released
     .status        : status, ongoing or finished
-    # .total_episode : total of all episode (we not use this for a moment)
     .image_url     : anime cover image
-
-    Usage of desired_output:
-    1. desired_output = "dict"
-    2. desired_output = "object" (default)
-
-    If using desired_output as "object" you no need to parse the dictonary.
-
-    Example of usage:
-    >>> from pynimeapi import PyNime
-    >>> api = PyNime("auth_token", "gogoanime_token")
-    >>> anime_detailsObj = api.get_details("http://gogoanime.ee/....", desired_output="object")
-    >>> print(anime_detailObj.genres)
-    ['Romance', 'Ecchi']
-    >>>
-    >>>
-    >>> anime_detailsDict = api.get_details("http://gogoanime.ee/....", desired_output="dict")
-    >>> print(anime_detailDict)
-    {
-      "season": "Summer 2022 Anime",
-      "synopsis": "Plot Summary: Second season of Hataraku Maou-sama!",
-      "genres": ["Comedy", "Demons", "Fantasy", "Romance", "Supernatural"],
-      "release_year": 2022,
-      "status": "Ongoing",
-      # "total_episode": 12,
-      "image_url": "https://gogocdn.net/cover/hataraku-maou-sama-2nd-season.png",
-    }
 
     '''
     try:
@@ -104,7 +72,6 @@ class PyNime:
       ]
       released = other_info[3].text.replace("Released: ", "")
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
-      # total_episode = len(self.get_eps_links(anime_category_link))
       image_url = image_url
 
       if desired_output == "dict":
@@ -114,7 +81,6 @@ class PyNime:
             "genres": genres,
             "release_year": released,
             "status": status,
-            # "total_episode": total_episode,
             "image_url": image_url
         }
 
@@ -127,7 +93,6 @@ class PyNime:
           genres= genres,
           released= released,
           status= status,
-          # total_episode= total_episode,
           image_url = image_url
         )
 
@@ -142,27 +107,16 @@ class PyNime:
   def get_eps_links(self, anime_category_link: str) -> list:
     '''
     Get total of anime episode available and links per episode.
-
-    Expected output (example):
-    [
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-1",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-2",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-3",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-4",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-5",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-7",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-8",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-9",
-      "https://gogoanime.ee/hataraku-maou-sama-2nd-season-episode-10",
-    ]
-
+    Output is a list of links to anime episode page.
     '''
     try:
       eps_list = []
       r = requests.get(anime_category_link)
       anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
-      res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",params={"ep_start": 0, "ep_end": 9999, "id": anime_id},)
+
+      res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",
+        params = {"ep_start": 0, "ep_end": 9999, "id": anime_id},)
+
       soup = BeautifulSoup(res.content, "html.parser")
       eps_urls = soup.find_all("a")
 
@@ -180,17 +134,12 @@ class PyNime:
   def get_download_link(self, anime_episode_link: str) -> DownloadLinkObj:
     '''
     Get download link on given anime episode link. Example of anime episode link
-    anime_episode_link = https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6
+    anime_episode_link = 'https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6'
 
     To get download link of desired resolution, use:
     .link_360 to get 360p download link
     .link_480 to get 480p download link
-    and so on...
-
-    Example of usage:
-    >>> download_link = api.get_download_link("https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6")
-    >>> download_link.link_360
-    https://gogodownload.net/download.php?url=.....long url.....
+    and so on... maximal resolution availabe are 1080p.
 
     '''
     try:
@@ -228,8 +177,8 @@ class PyNime:
 
   def fast_query(self, title: str, episode: int, resolution: int):
     '''
-    Fast query to search anime.
-    Initialy just for debuging, but I found this function really usefull LOL.
+    Fast query to get anime download link.
+    Output is download/streamable link.
     '''
     search_anime = self.search_anime(title)
 
@@ -238,17 +187,22 @@ class PyNime:
       print("[?] Default selection result are 1.")
       print("[>] 1 Selected. OK!")
       print()
+
       detail_anime = self.get_details(search_anime[0].url)
       eps = self.get_eps_links(search_anime[0].url)
-      if (episode > len(eps) or episode==0):
+
+      if (episode > len(eps) or episode == 0):
         print(f"[!] Unfortunately episode {episode} not released yet.")
         print(f"[!] Latest episode is episode {len(eps)}.")
         return
+
     else:
+      # If search query found nothing, return nothing.
+      # function search_anime will print message if nothing found.
       return
 
     # Print details of anime
-    print("[+] =========== Details ===========")
+    print("[+] ====================== Details ======================")
     print(f"[>] {search_anime[0].title}")
     print(f"[>] {detail_anime.season}")
     print(f"[>] {detail_anime.synopsis}")
