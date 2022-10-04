@@ -19,7 +19,7 @@ class PyNime:
   def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
     Search anime on given title.
-    Output is list of animes and their url in object.
+    It will return a list of animes and their url in object.
 
     '''
     try:
@@ -50,7 +50,7 @@ class PyNime:
   def get_details(self, anime_category_link: str, desired_output="object"):
     '''
     Get basic anime info/details.
-    Output is an object or dictonary. Output defined by user.
+    It will return an object or dictonary. Output defined by user.
     .season        : season of anime aired
     .synopsis      : plot of anime
     .genres        : genres
@@ -109,7 +109,7 @@ class PyNime:
   def get_eps_links(self, anime_category_link: str) -> list:
     '''
     Get total of anime episode available and links per episode.
-    Output is a list of links to anime episode page.
+    It will return a list of links to anime episode page.
     '''
     try:
       eps_list = []
@@ -151,7 +151,7 @@ class PyNime:
           "gogoanime": self.gogoanime_token
       }
 
-      r = requests.get(anime_episode_link, cookies=token)
+      r = requests.get(anime_episode_link, cookies = token)
       soup = BeautifulSoup(r.content, "lxml")
       download_div = soup.find("div", {'class': 'cf-download'}).findAll('a')
 
@@ -180,7 +180,7 @@ class PyNime:
   def fast_query(self, title: str, episode: int, resolution: int):
     '''
     Fast query to get anime download link.
-    Output is download/streamable link.
+    It will return download/streamable link.
     '''
     search_anime = self.search_anime(title)
 
@@ -190,7 +190,7 @@ class PyNime:
       print("[>] 1 Selected. OK!")
       print()
 
-      detail_anime = self.get_details(search_anime[0].url)
+      # detail_anime = self.get_details(search_anime[0].url)
       eps = self.get_eps_links(search_anime[0].url)
 
       if (episode > len(eps) or episode == 0):
@@ -204,21 +204,22 @@ class PyNime:
       return
 
     # Print details of anime
-    print("[+] ====================== Details ======================")
-    print(f"[>] {search_anime[0].title}")
-    print(f"[>] {detail_anime.season}")
-    print(f"[>] {detail_anime.synopsis}")
-    print(f"[>] {detail_anime.genres}")
-    print(f"[>] {detail_anime.released}")
-    print(f"[>] {detail_anime.status}")
-    print(f"[>] Total Episode: {len(eps)}")
-    print()
+    # print("[+] ====================== Details ======================")
+    # print(f"[>] {search_anime[0].title}")
+    # print(f"[>] {detail_anime.season}")
+    # print(f"[>] {detail_anime.synopsis}")
+    # print(f"[>] {detail_anime.genres}")
+    # print(f"[>] {detail_anime.released}")
+    # print(f"[>] {detail_anime.status}")
+    # print(f"[>] Total Episode: {len(eps)}")
+    # print()
 
     vid = self.get_download_link(eps[episode-1])
 
     if resolution == 360:
       if vid.link_360 == None:
         print("[!] Selected resolution not available.")
+        return vid.link_360
       else:
         print(f'[>] Link for {resolution}p : {vid.link_360}')
         return vid.link_360
@@ -226,6 +227,7 @@ class PyNime:
     if resolution == 480:
       if vid.link_480 == None:
         print("[!] Selected resolution not available.")
+        return vid.link_480
       else:
         print(f'[>] Link for {resolution}p : {vid.link_480}')
         return vid.link_480
@@ -233,6 +235,7 @@ class PyNime:
     if resolution == 720:
       if vid.link_720 == None:
         print("[!] Selected resolution not available.")
+        return vid.link_720
       else:
         print(f'[>] Link for {resolution}p : {vid.link_720}')
         return vid.link_720
@@ -240,6 +243,7 @@ class PyNime:
     if resolution == 1080:
       if vid.link_1080 == None:
         print("[!] Selected resolution not available.")
+        return vid.link_1080
       else:
         print(f'[>] Link for {resolution}p : {vid.link_1080}')
         return vid.link_1080
