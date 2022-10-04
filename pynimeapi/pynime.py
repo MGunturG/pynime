@@ -214,11 +214,11 @@ class PyNime:
     # print(f"[>] Total Episode: {len(eps)}")
     # print()
 
-    vid = self.get_download_link(eps[episode-1])
+    vid = self.get_download_link(eps[episode - 1])
 
     if resolution == 360:
       if vid.link_360 == None:
-        print("[!] Selected resolution not available.")
+        print("[!] Link to selected resolution not available.")
         return vid.link_360
       else:
         print(f'[>] Link for {resolution}p : {vid.link_360}')
@@ -226,7 +226,7 @@ class PyNime:
 
     if resolution == 480:
       if vid.link_480 == None:
-        print("[!] Selected resolution not available.")
+        print("[!] Link to selected resolution not available.")
         return vid.link_480
       else:
         print(f'[>] Link for {resolution}p : {vid.link_480}')
@@ -234,7 +234,7 @@ class PyNime:
 
     if resolution == 720:
       if vid.link_720 == None:
-        print("[!] Selected resolution not available.")
+        print("[!] Link to selected resolution not available.")
         return vid.link_720
       else:
         print(f'[>] Link for {resolution}p : {vid.link_720}')
@@ -242,11 +242,14 @@ class PyNime:
 
     if resolution == 1080:
       if vid.link_1080 == None:
-        print("[!] Selected resolution not available.")
+        print("[!] Link to selected resolution not available.")
         return vid.link_1080
       else:
         print(f'[>] Link for {resolution}p : {vid.link_1080}')
         return vid.link_1080
+
+    # If resolution is not 360, 480, 720, or 1080 it will return None
+    return None
 
 
   def get_video(self, video_link: str, file_name: str):
