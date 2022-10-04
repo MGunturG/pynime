@@ -17,7 +17,7 @@ class HTTPDownloader:
 
 		'''
 		saved_filename = f'{saved_filename}.mp4' # all videos uploaded on gogoanime is mp4 format
-		with requests.get(source, headers=self.headers, stream=True) as r:
+		with requests.get(source, headers = self.headers, stream = True) as r:
 			if r.status_code == 200:
 				print("Link available.")
 
@@ -51,7 +51,7 @@ class HTTPDownloader:
 
 		'''
 		start_time = time.time() 
-		with requests.get(source, headers=self.headers, stream=True) as r:
+		with requests.get(source, headers = self.headers, stream = True) as r:
 			r.raise_for_status()
 			file_size = r.headers.get('content-length')
 
@@ -67,7 +67,7 @@ class HTTPDownloader:
 
 					done = int(50 * downloaded_byte / file_size)
 					download_speed = downloaded_byte / (time.time() - start_time) / 10**6
-					sys.stdout.write("\r[%s%s] Status: %d%% | Speed: %.2f MB/s" % ('=' * done, ' ' * (50 - done), int(downloaded_byte/file_size * 100)))
+					sys.stdout.write("\r[%s%s] Status: %d%% | Speed: %.2f MB/s" % ('=' * done, ' ' * (50 - done), int(downloaded_byte/file_size * 100), download_speed))
 					sys.stdout.flush()
 
 		return download_filename

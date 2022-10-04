@@ -7,6 +7,8 @@ from pynimeapi.data_classes import *
 from pynimeapi.downloader.http_downloader import HTTPDownloader
 # from pynimeapi.downloader.pysmartdl import *
 
+downloader = HTTPDownloader()
+
 class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.ee"):
     self.auth_token = auth
@@ -139,7 +141,7 @@ class PyNime:
     To get download link of desired resolution, use:
     .link_360 to get 360p download link
     .link_480 to get 480p download link
-    and so on... maximal resolution availabe are 1080p.
+    and so on... maximum resolution availabe are 1080p.
 
     '''
     try:
@@ -241,3 +243,15 @@ class PyNime:
       else:
         print(f'[>] Link for {resolution}p : {vid.link_1080}')
         return vid.link_1080
+
+
+  def get_video(self, video_link: str, file_name: str):
+    ''' Remember, all video uploaded on GoGoAnime is mp4 '''
+
+    # Check if file exists
+    if downloader.check_if_exists(video_link, file_name):
+      # File exists, skip download
+      return
+    else:
+      # Continue download the file
+      downloader.download(video_link, file_name)

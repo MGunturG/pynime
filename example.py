@@ -42,3 +42,8 @@ print(download_link.link_360)
 print(download_link.link_480)
 print(download_link.link_720)
 print(download_link.link_1080)
+
+
+# Download the video
+file_name = f'{search_result[anime_selection].title}_{episode_selection + 1}'
+api.get_video(download_link.link_360, file_name) # Downloading 360p video
