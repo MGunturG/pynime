@@ -4,9 +4,9 @@ PyNime is a (simple) straightforward Python3 script to scrape GoGoAnime using Py
 
 ToDo:
 - [x] Restructure code base to use class code base
-- Make downloader (I'm working on it!!!)
-- Play on player like mpv or vlc
-- Get top current airing anime
+- [x] Make downloader (Internal downloader done, but it has slow download speed)
+- ~~Play on player like mpv or vlc~~ (I think this function not needed)
+- Get top current airing anime (Working on it)
 
 I didn't make this to be able to search by genre, know the popular anime (all time/top ranked anime), and so on. The main purpose of this script is **I want to watch anime on the video player I installed on my computer**, that's all.
 
@@ -144,4 +144,4 @@ api = PyNime(
 result = api.fast_query("yofukashi no uta", episode = 12, resolution = 480)
 print(result)
 ```
->**Note:** Function will print the possible anime search results (default selection is result number 1), details of anime, and will return download/streamable link for desired episode and resolution. If desired resolution or episode not available, it will return `None`.
+>**Note:** Function will print the possible anime search results (default selection is result number 1) and will return download/streamable link for desired episode and resolution. If desired resolution or episode not available, it will return `None`.
