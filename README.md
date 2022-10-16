@@ -8,17 +8,13 @@ ToDo:
 - ~~Play on player like mpv or vlc~~ (I think this function not needed)
 - Get top current airing anime (Working on it)
 
-I didn't make this to be able to search by genre, know the popular anime (all time/top ranked anime), and so on. The main purpose of this script is **I want to watch anime on the video player I installed on my computer**, that's all.
-
-I just wanted to make it as simple as possible. If you want anime recommendations, visit anilis, myanimelist, or Reddit (r/AnimeSuggest and others).
-
-The project is still a work in progress, not finished yet. But, the code works well, feel free to take part of the code.
+The project is a work in progress, not finished yet. But, the code works well, feel free to take part of the code.
 
 ### Getting Started
 #### Pre-Requisites
 * #### Get Auth and Gogoanime token
     * Go visit GoGoAnime
-    * Make an account (please use temp mail) 
+    * Create an account (please use temp mail) 
     * Do a verification stuff until you can login 
     * After login, open Web Developer Tools (CTRL + SHIFT +I)
     * Go to Storage Inspector
@@ -31,12 +27,12 @@ First, you need to initialize the PyNime class.
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
 ```
 ###
->**Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanime.ee
+>**Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanime.dk
 
 
 ### Search an Anime
@@ -44,9 +40,9 @@ You can search anime by title using `search_anime`. It will print anime that fou
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
     
 search_result = api.search_anime("yofukashi no uta")
 
@@ -59,7 +55,7 @@ for i in search_result:
 
 
 ### Get Anime Details
-You can get a basic details of anime using `get_details`. It will return anime details as `AnimeDetailsObj` or dictonary.
+You can get a basic details of anime using `get_details`. It will return anime details as `AnimeDetailsObj`.
 Details of anime contains :
 * season
 * synopsis
@@ -70,22 +66,17 @@ Details of anime contains :
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
     
 search_result = api.search_anime("yofukashi no uta")
 
 details = api.get_details(search_result[0].url, desired_output = 'object')
 print(details.genres)
 print(details.status) # and more...
-
-details = api.get_details(search_result[0].url, desired_output = 'dict')
-print(details) # print anime details in dictonary.
 ```
->**Note:** `get_details` need two input argument.
-First argument is `anime_category_link` which need anime category/details page URL. 
-Second argument is `desired_output` for selecting the desired output which can accept `object` or `dict`, or leave it blank, the default will return `AnimeDetailsObj`.
+>**Note:** `get_details` input argument is `anime_category_link` which need anime category/details page URL, it will return `AnimeDetailsObj`.
 
 
 ### Get Anime Episode Links
@@ -93,16 +84,16 @@ Get total of anime episode available and links per episode using `get_eps_links`
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
     
 search_result = api.search_anime("yofukashi no uta")
 
 episode_links = api.get_eps_links(search_result[0].url)
 print(episode_links[0]) # link to episode 1
-print(episode_links[0]) # link to episode 2
-# and more...
+print(episode_links[1]) # link to episode 2
+# and more... (array start from 0 btw)
 ```
 
 
@@ -116,9 +107,9 @@ You can simply get the streamable and downloadable links of a specific episode o
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
     
 search_result = api.search_anime("yofukashi no uta")
 
@@ -137,11 +128,24 @@ For `fast_query`, this function will return a download link based on the input. 
 ```python
 from pynimeapi import PyNime
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
     
 result = api.fast_query("yofukashi no uta", episode = 12, resolution = 480)
 print(result)
 ```
 >**Note:** Function will print the possible anime search results (default selection is result number 1) and will return download/streamable link for desired episode and resolution. If desired resolution or episode not available, it will return `None`.
+
+
+### Get Schedule
+Get the schedule from today to a week ahead.
+```python
+from pynimeapi import PyNime
+api = PyNime(
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
+    
+api.get_schedule() # just simple call
+```

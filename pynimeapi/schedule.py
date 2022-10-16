@@ -94,8 +94,10 @@ def iter_schedule(unix_time):
 		yield from data.get("airingSchedules", [])
 
 # Print the Schedule
-for date_format, child_component in arrange_template(list(iter_schedule(int(time.time())))).items():
-	print(f"[>] On {date_format}") # !! Please make this colorized text output so user can notice the date
+
+def print_schedule():
+	for date_format, child_component in arrange_template(list(iter_schedule(int(time.time())))).items():
+		print(f"[>] On {date_format}") # !! Please make this colorized text output so user can notice the date
 	for (time_format, _), anime_component in sorted(
 		child_component.items(),key = lambda component: component[0][1], reverse = True
 		):

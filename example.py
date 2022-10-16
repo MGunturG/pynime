@@ -3,9 +3,9 @@ from pynimeapi import PyNime
 
 # Init the API
 api = PyNime(
-    auth = "Your auth token",
-    gogoanime = "Your gogoanime token",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
 
 
 # Search Anime
@@ -45,5 +45,5 @@ print(download_link.link_1080)
 
 
 # Download the video
-file_name = f'{search_result[anime_selection].title}_{episode_selection + 1}'
-api.get_video(download_link.link_360, file_name) # Downloading 360p video
+file_name = f'{search_result[anime_selection].title} - Episode {episode_selection + 1}'
+api.get_video(download_link.link_1080, file_name) # Downloading 1080p video

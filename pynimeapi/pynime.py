@@ -3,14 +3,14 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
+import pynimeapi.schedule as schedule
 from pynimeapi.data_classes import *
 from pynimeapi.downloader.http_downloader import HTTPDownloader
-# from pynimeapi.downloader.pysmartdl import *
 
 downloader = HTTPDownloader()
 
 class PyNime:
-  def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.ee"):
+  def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.dk"):
     self.auth_token = auth
     self.gogoanime_token = gogoanime
     self.baseURL = base_url    
@@ -47,7 +47,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def get_details(self, anime_category_link: str, desired_output="object"):
+  def get_details(self, anime_category_link: str):
     '''
     Get basic anime info/details.
     It will return an object or dictonary. Output defined by user.
@@ -76,29 +76,40 @@ class PyNime:
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
       image_url = image_url
 
-      if desired_output == "dict":
-        anime_info_dict = {
-            "season": season,
-            "synopsis": synopsis,
-            "genres": genres,
-            "released": released,
-            "status": status,
-            "image_url": image_url
-        }
+      # if desired_output == "dict":
+      #   anime_info_dict = {
+      #       "season": season,
+      #       "synopsis": synopsis,
+      #       "genres": genres,
+      #       "released": released,
+      #       "status": status,
+      #       "image_url": image_url
+      #   }
 
-        return anime_info_dict
+      #   return anime_info_dict
 
-      else:
-        anime_info_object = AnimeDetailsObj(
-          season = season,
-          synopsis = synopsis,
-          genres= genres,
-          released= released,
-          status= status,
-          image_url = image_url
-        )
+      # else:
+      #   anime_info_object = AnimeDetailsObj(
+      #     season = season,
+      #     synopsis = synopsis,
+      #     genres= genres,
+      #     released= released,
+      #     status= status,
+      #     image_url = image_url
+      #   )
 
-        return anime_info_object
+      #   return anime_info_object
+
+      anime_info_object = AnimeDetailsObj(
+        season = season,
+        synopsis = synopsis,
+        genres= genres,
+        released= released,
+        status= status,
+        image_url = image_url
+      )
+
+      return anime_info_object
 
     except AttributeError:
       print("Invalid argument given!")
@@ -262,3 +273,7 @@ class PyNime:
     else:
       # Continue download the file
       downloader.download(video_link, file_name)
+
+
+  def get_schedule(self):
+    schedule.print_schedule()
