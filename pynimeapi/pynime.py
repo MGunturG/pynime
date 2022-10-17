@@ -3,18 +3,21 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
-import pynimeapi.schedule as schedule
-from pynimeapi.color_classes import bcolors
-from pynimeapi.data_classes import *
-from pynimeapi.downloader.http_downloader import HTTPDownloader
+from pynimeapi.classes.datatype import *
+from pynimeapi.classes.color import bcolors
 
+from pynimeapi.downloader.http_downloader import HTTPDownloader
 downloader = HTTPDownloader()
+
+from pynimeapi.schedule import GetSchedule
+schedule = GetSchedule()
+
 
 class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.dk"):
     self.auth_token = auth
     self.gogoanime_token = gogoanime
-    self.baseURL = base_url    
+    self.baseURL = base_url
 
 
   def search_anime(self, anime_title: str) -> SearchResultObj:
@@ -37,8 +40,6 @@ class PyNime:
           SearchResultObj(title=f'{i.contents[1].get("title")}', 
           url=f'{self.baseURL}{i.contents[1].get("href")}'))
 
-        print(f'{idx+1} | {i.contents[1].get("title")}')
-
       if not anime_result:
         print(f"{bcolors.WARNING}[!] Anime not found!{bcolors.ENDC}")
         return None
@@ -52,7 +53,7 @@ class PyNime:
   def get_details(self, anime_category_link: str):
     '''
     Get basic anime info/details.
-    It will return an object or dictonary. Output defined by user.
+    It will return an object.
     .season        : season of anime aired
     .synopsis      : plot of anime
     .genres        : genres
@@ -78,30 +79,6 @@ class PyNime:
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
       image_url = image_url
 
-      # if desired_output == "dict":
-      #   anime_info_dict = {
-      #       "season": season,
-      #       "synopsis": synopsis,
-      #       "genres": genres,
-      #       "released": released,
-      #       "status": status,
-      #       "image_url": image_url
-      #   }
-
-      #   return anime_info_dict
-
-      # else:
-      #   anime_info_object = AnimeDetailsObj(
-      #     season = season,
-      #     synopsis = synopsis,
-      #     genres= genres,
-      #     released= released,
-      #     status= status,
-      #     image_url = image_url
-      #   )
-
-      #   return anime_info_object
-
       anime_info_object = AnimeDetailsObj(
         season = season,
         synopsis = synopsis,
@@ -125,7 +102,8 @@ class PyNime:
     It will return a list of links to anime episode page.
     '''
     try:
-      eps_list = []
+      eps_list = [] # an empty list for storing links
+
       r = requests.get(anime_category_link)
       anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
 
@@ -135,11 +113,13 @@ class PyNime:
       soup = BeautifulSoup(res.content, "html.parser")
       eps_urls = soup.find_all("a")
 
+      # Append found links to list
       for x in eps_urls:
         eps_list.append(f'{self.baseURL}{(x.get("href")).strip()}')
       eps_list.reverse()
 
       return eps_list
+
     except AttributeError:
       print("Invalid argument given!")
     except requests.exceptions.ConnectionError:
@@ -150,8 +130,9 @@ class PyNime:
     '''
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = 'https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6'
+    (It's link for anime Hataraku Maou Sama 2nd Season Episode 6)
 
-    To get download link of desired resolution, use:
+    To get the download link of the desired resolution, use:
     .link_360 to get 360p download link
     .link_480 to get 480p download link
     and so on... maximum resolution availabe are 1080p.
@@ -198,7 +179,6 @@ class PyNime:
     search_anime = self.search_anime(title)
 
     if search_anime:
-      print()
       print(f"{bcolors.OKGREEN}[?] Default selection result are 1.{bcolors.ENDC}")
       print(f"{bcolors.OKGREEN}[>] 1 Selected. OK!{bcolors.ENDC}")
       print()
@@ -215,17 +195,6 @@ class PyNime:
       # If search query found nothing, return nothing.
       # function search_anime will print message if nothing found.
       return None
-
-    # Print details of anime
-    # print("[+] ====================== Details ======================")
-    # print(f"[>] {search_anime[0].title}")
-    # print(f"[>] {detail_anime.season}")
-    # print(f"[>] {detail_anime.synopsis}")
-    # print(f"[>] {detail_anime.genres}")
-    # print(f"[>] {detail_anime.released}")
-    # print(f"[>] {detail_anime.status}")
-    # print(f"[>] Total Episode: {len(eps)}")
-    # print()
 
     vid = self.get_download_link(eps[episode - 1])
 
@@ -277,5 +246,5 @@ class PyNime:
       downloader.download(video_link, file_name)
 
 
-  def get_schedule(self):
-    schedule.print_schedule()
+  def get_schedule(self, unix_time: int):
+    schedule.print_schedule(unix_time)

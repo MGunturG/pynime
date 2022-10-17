@@ -1,3 +1,4 @@
+import time
 from pynimeapi import PyNime
 
 # Init the API
@@ -10,6 +11,10 @@ api = PyNime(
 # Search Anime
 anime_title = input("Input anime title: ")
 search_result = api.search_anime(anime_title)
+
+for i in search_result:
+    print(f"{i.title}")
+
 anime_selection = int(input("Select anime: ")) - 1
 
 
@@ -46,3 +51,7 @@ print(download_link.link_1080)
 # Download the video
 file_name = f'{search_result[anime_selection].title} - Episode {episode_selection + 1}'
 api.get_video(download_link.link_1080, file_name) # Downloading 1080p video
+
+
+# Get Schedule
+api.get_schedule(int(time.time()))
