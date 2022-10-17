@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import pynimeapi.schedule as schedule
+from pynimeapi.color_classes import bcolors
 from pynimeapi.data_classes import *
 from pynimeapi.downloader.http_downloader import HTTPDownloader
 
@@ -39,7 +40,8 @@ class PyNime:
         print(f'{idx+1} | {i.contents[1].get("title")}')
 
       if not anime_result:
-        print("[!] Anime not found!")
+        print(f"{bcolors.WARNING}[!] Anime not found!{bcolors.ENDC}")
+        return None
       else:
         return anime_result
 
@@ -197,22 +199,22 @@ class PyNime:
 
     if search_anime:
       print()
-      print("[?] Default selection result are 1.")
-      print("[>] 1 Selected. OK!")
+      print(f"{bcolors.OKGREEN}[?] Default selection result are 1.{bcolors.ENDC}")
+      print(f"{bcolors.OKGREEN}[>] 1 Selected. OK!{bcolors.ENDC}")
       print()
 
       # detail_anime = self.get_details(search_anime[0].url)
       eps = self.get_eps_links(search_anime[0].url)
 
       if (episode > len(eps) or episode == 0):
-        print(f"[!] Unfortunately episode {episode} not released yet.")
-        print(f"[!] Latest episode is episode {len(eps)}.")
+        print(f"{bcolors.WARNING}[!] Unfortunately episode {episode} not released yet.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Latest episode is episode {len(eps)}.{bcolors.ENDC}")
         return
 
     else:
       # If search query found nothing, return nothing.
       # function search_anime will print message if nothing found.
-      return
+      return None
 
     # Print details of anime
     # print("[+] ====================== Details ======================")
@@ -229,34 +231,34 @@ class PyNime:
 
     if resolution == 360:
       if vid.link_360 == None:
-        print("[!] Link to selected resolution not available.")
+        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_360
       else:
-        print(f'[>] Link for {resolution}p : {vid.link_360}')
+        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_360}')
         return vid.link_360
 
     if resolution == 480:
       if vid.link_480 == None:
-        print("[!] Link to selected resolution not available.")
+        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_480
       else:
-        print(f'[>] Link for {resolution}p : {vid.link_480}')
+        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_480}')
         return vid.link_480
 
     if resolution == 720:
       if vid.link_720 == None:
-        print("[!] Link to selected resolution not available.")
+        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_720
       else:
-        print(f'[>] Link for {resolution}p : {vid.link_720}')
+        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_720}')
         return vid.link_720
 
     if resolution == 1080:
       if vid.link_1080 == None:
-        print("[!] Link to selected resolution not available.")
+        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_1080
       else:
-        print(f'[>] Link for {resolution}p : {vid.link_1080}')
+        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_1080}')
         return vid.link_1080
 
     # If resolution is not 360, 480, 720, or 1080 it will return None

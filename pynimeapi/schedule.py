@@ -1,9 +1,10 @@
 import json
-import requests
 import time
+import requests
 
-from collections import defaultdict
 from datetime import datetime
+from collections import defaultdict
+from pynimeapi.color_classes import bcolors
 
 ''' Currently on testing if the schedule are correct because the schedule from this
 	API different with schedule form animixplay.
@@ -49,7 +50,7 @@ def arrange_template(data):
 	template = defaultdict(lambda: defaultdict(list))
 
 	for airing in data[::1]:
-		datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0))
+		datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0) + 2 * 60 * 60) # Add 2 hour
 		template[format(datetime_object, "%b. %d, %A")][
 			(format(datetime_object, "%X"), datetime_object)
 		].append({
@@ -97,15 +98,13 @@ def iter_schedule(unix_time):
 
 def print_schedule():
 	for date_format, child_component in arrange_template(list(iter_schedule(int(time.time())))).items():
-		print(f"[>] On {date_format}") # !! Please make this colorized text output so user can notice the date
-	for (time_format, _), anime_component in sorted(
-		child_component.items(),key = lambda component: component[0][1], reverse = True
-		):
+		print(f"{bcolors.HEADER}[>] On {date_format} {bcolors.ENDC}") # !! Please make this colorized text output so user can notice the date
+		for (time_format, _), anime_component in sorted(
+			child_component.items(),key = lambda component: component[0][1], reverse = False):
 			print(f"\t{time_format} - {{}}".format( # FORMAT IS ANIME_TITLE [NEXT EPISODE AIRING]
-				", ".join(f"{anime['name']} [{anime['episode']}]" for anime in anime_component)))
+				"\n\t\t - ".join(f"{anime['name']} [{anime['episode']}]" for anime in anime_component)))
 			'''
 			Expected output from this are 
 			00:00:00 - Anime_Title [Next_Airing_Episode]
 			'''
-	print("\n")
-	
+		# print("\n")

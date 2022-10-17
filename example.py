@@ -1,6 +1,5 @@
 from pynimeapi import PyNime
 
-
 # Init the API
 api = PyNime(
     auth = "your auth code from cookie",
