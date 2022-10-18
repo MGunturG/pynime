@@ -72,7 +72,7 @@ api = PyNime(
     
 search_result = api.search_anime("yofukashi no uta")
 
-details = api.get_details(search_result[0].url, desired_output = 'object')
+details = api.get_details(search_result[0].url)
 print(details.genres)
 print(details.status) # and more...
 ```
@@ -141,11 +141,15 @@ print(result)
 ### Get Schedule
 Get the schedule from today to a week ahead.
 ```python
+import time
 from pynimeapi import PyNime
 api = PyNime(
     auth = "your auth code from cookie",
     gogoanime = "your gogoanime code from cookie",
     base_url = "https://gogoanime.dk")
+
+current_time = int(time.time())
     
-api.get_schedule() # just simple call
+api.get_schedule(current_time) # just simple call
 ```
+>**Note:** Need UNIX in integer. Return nothing, this funtion only print the schedule. Will fix later.
