@@ -19,7 +19,6 @@ class PyNime:
     self.gogoanime_token = gogoanime
     self.baseURL = base_url
 
-
   def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
     Search anime on given title.
@@ -37,8 +36,8 @@ class PyNime:
 
       for idx, i in enumerate(result):
         anime_result.append(
-          SearchResultObj(title=f'{i.contents[1].get("title")}', 
-          url=f'{self.baseURL}{i.contents[1].get("href")}'))
+          SearchResultObj(title = f'{i.contents[1].get("title")}', 
+          category_url = f'{self.baseURL}{i.contents[1].get("href")}'))
 
       if not anime_result:
         print(f"{bcolors.WARNING}[!] Anime not found!{bcolors.ENDC}")
@@ -50,7 +49,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def get_details(self, anime_category_link: str):
+  def get_anime_details(self, anime_category_url: str):
     '''
     Get basic anime info/details.
     It will return an object.
@@ -63,12 +62,13 @@ class PyNime:
 
     '''
     try:
-      detail_page = requests.get(anime_category_link)
+      detail_page = requests.get(anime_category_url)
       soup = BeautifulSoup(detail_page.text, "html.parser")
       info_body = soup.find("div", {"class": "anime_info_body_bg"})
       image_url = info_body.find("img")["src"]
       other_info = info_body.find_all("p", {"class": "type"})
 
+      title = info_body.find("h1").text.strip()
       season = other_info[0].text.replace("\n", "").replace("Type: ", "")
       synopsis = other_info[1].text.replace("\n", "")
       genres = [
@@ -79,16 +79,17 @@ class PyNime:
       status = other_info[4].text.replace("\n", "").replace("Status: ", "")
       image_url = image_url
 
-      anime_info_object = AnimeDetailsObj(
+      anime_info = AnimeDetailsObj(
+        title = title,
         season = season,
         synopsis = synopsis,
-        genres= genres,
-        released= released,
-        status= status,
+        genres = genres,
+        released = released,
+        status = status,
         image_url = image_url
       )
 
-      return anime_info_object
+      return anime_info
 
     except AttributeError:
       print("Invalid argument given!")
@@ -96,15 +97,15 @@ class PyNime:
       print("Network Error.")
 
 
-  def get_eps_links(self, anime_category_link: str) -> list:
+  def get_episode_urls(self, anime_category_url: str) -> list:
     '''
-    Get total of anime episode available and links per episode.
-    It will return a list of links to anime episode page.
+    Get total of anime episode available and urls per episode.
+    It will return a list of urls to anime episode page.
     '''
     try:
       eps_list = [] # an empty list for storing links
 
-      r = requests.get(anime_category_link)
+      r = requests.get(anime_category_url)
       anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
 
       res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",
@@ -126,7 +127,7 @@ class PyNime:
       print("Network Error.")
 
 
-  def get_download_link(self, anime_episode_link: str) -> DownloadLinkObj:
+  def get_download_link(self, anime_episode_url: str) -> DownloadLinkObj:
     '''
     Get download link on given anime episode link. Example of anime episode link
     anime_episode_link = 'https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6'
@@ -145,7 +146,7 @@ class PyNime:
           "gogoanime": self.gogoanime_token
       }
 
-      r = requests.get(anime_episode_link, cookies = token)
+      r = requests.get(anime_episode_url, cookies = token)
       soup = BeautifulSoup(r.content, "lxml")
       download_div = soup.find("div", {'class': 'cf-download'}).findAll('a')
 
@@ -165,26 +166,23 @@ class PyNime:
           download_links.link_1080 = f'{data["href"]}'
 
       return download_links
+
     except AttributeError:
       print("Invalid argument given!")
     except requests.exceptions.ConnectionError:
       print("Network Error.")
 
 
-  def fast_query(self, title: str, episode: int, resolution: int):
+  def grab_download(self, anime_title: str, episode: int, resolution: int):
     '''
     Fast query to get anime download link.
-    It will return download/streamable link.
+    It will return download link as string.
     '''
-    search_anime = self.search_anime(title)
+    search_anime = self.search_anime(anime_title)
 
     if search_anime:
-      print(f"{bcolors.OKGREEN}[?] Default selection result are 1.{bcolors.ENDC}")
-      print(f"{bcolors.OKGREEN}[>] 1 Selected. OK!{bcolors.ENDC}")
-      print()
-
-      # detail_anime = self.get_details(search_anime[0].url)
-      eps = self.get_eps_links(search_anime[0].url)
+      # detail_anime = self.get_details(search_anime[0].category_url)
+      eps = self.get_episode_urls(search_anime[0].category_url)
 
       if (episode > len(eps) or episode == 0):
         print(f"{bcolors.WARNING}[!] Unfortunately episode {episode} not released yet.{bcolors.ENDC}")
@@ -200,50 +198,52 @@ class PyNime:
 
     if resolution == 360:
       if vid.link_360 == None:
-        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_360
       else:
-        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_360}')
+        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_360}')
         return vid.link_360
 
     if resolution == 480:
       if vid.link_480 == None:
-        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_480
       else:
-        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_480}')
+        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_480}')
         return vid.link_480
 
     if resolution == 720:
       if vid.link_720 == None:
-        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_720
       else:
-        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_720}')
+        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_720}')
         return vid.link_720
 
     if resolution == 1080:
       if vid.link_1080 == None:
-        print(f"{bcolors.WARNING}[!] Link to selected resolution not available.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
         return vid.link_1080
       else:
-        print(f'{bcolors.OKGREEN}[>] Link for {resolution}p{bcolors.ENDC} : {vid.link_1080}')
+        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_1080}')
         return vid.link_1080
 
     # If resolution is not 360, 480, 720, or 1080 it will return None
     return None
 
+  def grab_stream(self, anime_title: str, episode: int, resolution: int):
+    return None
 
-  def get_video(self, video_link: str, file_name: str):
+  def download_video(self, video_download_link: str, file_name: str):
     ''' Remember, all video uploaded on GoGoAnime is mp4 '''
 
     # Check if file exists
-    if downloader.check_if_exists(video_link, file_name):
+    if downloader.check_if_exists(video_download_link, file_name):
       # File exists, skip download
       return
     else:
       # Continue download the file
-      downloader.download(video_link, file_name)
+      downloader.download(video_download_link, file_name)
 
 
   def get_schedule(self, unix_time: int):
