@@ -2,16 +2,10 @@ import time
 from pynimeapi import PyNime
 
 # Init the API
-# api = PyNime(
-#     auth = "your auth code from cookie",
-#     gogoanime = "your gogoanime code from cookie",
-#     base_url = "https://gogoanime.dk")
-
-# Init the API
 api = PyNime(
-    auth = "KbjxHAyV4c6jhfHbI2mLM6Z278Nm40FTiIv8xOdV6QxHkcDS10PoVMGCsrS2NXsZpdQNivMfLU7P95mqT4PhcA%3D%3D",
-    gogoanime = "9a8atlbsbl69dfhb0g332ok383",
-    base_url = "https://gogoanime.ee")
+    auth = "your auth code from cookie",
+    gogoanime = "your gogoanime code from cookie",
+    base_url = "https://gogoanime.dk")
 
 # Search an anime
 anime_title = input("Input anime title: ")
