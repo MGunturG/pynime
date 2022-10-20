@@ -16,9 +16,8 @@ class streamUrl:
 	Class for getting embed and streamable url
 	it will return link to m3u8 playlist.
 	''' 
-
-	def __init__(self, anime_episode_link, video_quality):
-		self.qual = video_quality # "best" or "worst"
+	def __init__(self, anime_episode_link):
+		self.qual = None
 		self.episode_link = anime_episode_link
 		self.session = requests.Session()
 		retry = Retry(connect = 3, backoff_factor = 0.5)
@@ -36,13 +35,6 @@ class streamUrl:
 		self.key = keys["key"]
 		self.second_key = keys["second_key"]
 
-	def embed_url(self):
-		r = self.session.get(self.episode_link)
-		soup = BeautifulSoup(r.content, "html.parser")
-		link = soup.find("a", {"class": "active", "rel": "1"})
-		embed_url = f'https:{link["data-video"]}'
-		return embed_url
-
 	@functools.lru_cache()
 	def get_encryption_keys(self):
 		return {
@@ -51,10 +43,16 @@ class streamUrl:
 		}
 
 	def aes_encrypt(self, data, key):
-		return base64.b64encode(AES.new(key, self.mode, iv=self.iv).encrypt(self.pad(data).encode()))
+		return base64.b64encode(
+			AES.new(key, self.mode, iv=self.iv).encrypt(self.pad(data).encode())
+		)
 
 	def aes_decrypt(self, data, key):
-		return (AES.new(key, self.mode, iv = self.iv).decrypt(base64.b64decode(data)).strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10"))
+		return (
+			AES.new(key, self.mode, iv = self.iv)
+			.decrypt(base64.b64decode(data))
+			.strip(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f\x10")
+		)
 
 	def get_data(self, embed_url):
 		r = self.session.get(embed_url)
@@ -62,7 +60,12 @@ class streamUrl:
 		crypto = soup.find("script", {"data-name": "episode"})
 		return crypto["data-value"]
 
-	def stream_url(self, embed_url):
+	def stream_url(self):
+		r = self.session.get(self.episode_link)
+		soup = BeautifulSoup(r.content, "html.parser")
+		link = soup.find("a", {"class": "active", "rel": "1"})
+		embed_url = f'https:{link["data-video"]}'
+
 		parsed = urlparse(embed_url)
 		self.ajax_url = parsed.scheme + "://" + parsed.netloc + self.ajax_url
 
@@ -107,3 +110,4 @@ class streamUrl:
 			stream = streams[-1]
 
 		return stream['file']
+
