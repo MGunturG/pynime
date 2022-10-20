@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 class PlaylistParser():
 	def __init__(self):
-		self.regex_pattern = "RESOLUTION=[A-Za-z0-9]+"
+		self.regex_pattern = r"x[0-9]+"
 
 	def parser(self, playlist_url: str):
 		playlist = m3u8.load(playlist_url)
@@ -15,7 +15,7 @@ class PlaylistParser():
 		if playlist.is_variant:
 			# find available resolution
 			find_resolution = re.findall(self.regex_pattern, playlist_string)
-			find_resolution = [i.replace("RESOLUTION=","") for i in find_resolution]
+			find_resolution = [i.replace("x","") for i in find_resolution]
 
 			# get uri base
 			url_parse = urlparse(playlist_url)
