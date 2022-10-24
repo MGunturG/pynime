@@ -12,12 +12,16 @@ downloader = HTTPDownloader()
 from pynimeapi.schedule import GetSchedule
 schedule = GetSchedule()
 
+from pynimeapi.streaming.playlist_parser import PlaylistParser
+from pynimeapi.streaming.url_handler import streamUrl
+
 
 class PyNime:
   def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.dk"):
     self.auth_token = auth
     self.gogoanime_token = gogoanime
     self.baseURL = base_url
+
 
   def search_anime(self, anime_title: str) -> SearchResultObj:
     '''
@@ -232,7 +236,32 @@ class PyNime:
     return None
 
   def grab_stream(self, anime_title: str, episode: int, resolution: int):
-    return None
+    resolution = str(resolution)
+    playlist = PlaylistParser()
+
+    search_anime = self.search_anime(anime_title)
+
+    if search_anime:
+      eps = self.get_episode_urls(search_anime[0].category_url)
+
+      if (episode > len(eps) or episode == 0):
+        print(f"{bcolors.WARNING}[!] Unfortunately episode {episode} not released yet.{bcolors.ENDC}")
+        print(f"{bcolors.WARNING}[!] Latest episode is episode {len(eps)}.{bcolors.ENDC}")
+        return None
+
+    else:
+      return None
+
+    urlhandle = streamUrl(eps[episode-1])
+    stream_link = urlhandle.stream_url()
+
+    result = playlist.parser(stream_link)
+
+    if resolution in result:
+      return result[resolution]
+    else:
+      return None
+
 
   def download_video(self, video_download_link: str, file_name: str):
     ''' Remember, all video uploaded on GoGoAnime is mp4 '''
