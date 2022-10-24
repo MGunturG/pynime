@@ -40,11 +40,11 @@ for i in episodes:
     print(i)
 
 ## Select episode
-episode_selection = int(input("Select episode: ")) - 1
+episode_selection = int(input("Select episode: "))
 
 
 # Get download link from given episode url
-download_link = api.get_download_link(episodes[episode_selection])
+download_link = api.get_download_link(episodes[episode_selection - 1])
 print(download_link.link_360)
 print(download_link.link_480)
 print(download_link.link_720)
@@ -53,11 +53,16 @@ print(download_link.link_1080)
 
 # Downloading a video
 file_name = f'{anime_details.title} - Episode {episode_selection + 1}' # You can edit this
-api.download_video(download_link.link_360, file_name) # Downloading 360p video
+# api.download_video(download_link.link_360, file_name) # Downloading 360p video
 
 ## or just use grab_download fucntion for fastest query
 ## it will return download link in string type
-download_link = api.grab_download("chanisaw man", 1, 1080)
+download_link = api.grab_download(anime_title, episode_selection, 1080)
+print(download_link)
+
+## and.... or grab_stream for get streaming url
+stream_url = api.grab_stream(anime_title, episode_selection, 1080)
+print(stream_url)
 
 # Get Schedule
 api.get_schedule(int(time.time()))

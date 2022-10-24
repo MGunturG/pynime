@@ -185,7 +185,6 @@ class PyNime:
     search_anime = self.search_anime(anime_title)
 
     if search_anime:
-      # detail_anime = self.get_details(search_anime[0].category_url)
       eps = self.get_episode_urls(search_anime[0].category_url)
 
       if (episode > len(eps) or episode == 0):
@@ -202,34 +201,30 @@ class PyNime:
 
     if resolution == 360:
       if vid.link_360 == None:
-        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
-        return vid.link_360
+        return None
+
       else:
-        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_360}')
         return vid.link_360
 
     if resolution == 480:
       if vid.link_480 == None:
-        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
-        return vid.link_480
+        return None
+
       else:
-        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_480}')
         return vid.link_480
 
     if resolution == 720:
       if vid.link_720 == None:
-        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
-        return vid.link_720
+        return None
+
       else:
-        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_720}')
         return vid.link_720
 
     if resolution == 1080:
       if vid.link_1080 == None:
-        print(f"{bcolors.WARNING}[!] Download Link to selected resolution not available.{bcolors.ENDC}")
-        return vid.link_1080
+        return None
+        
       else:
-        print(f'{bcolors.OKGREEN}[>] Download Link for {resolution}p{bcolors.ENDC} : {vid.link_1080}')
         return vid.link_1080
 
     # If resolution is not 360, 480, 720, or 1080 it will return None

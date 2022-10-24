@@ -1,14 +1,15 @@
 # PyNime
 ## _Yet simple API wrapper for GoGoAnime_
 PyNime is a (simple) straightforward Python3 script to scrape GoGoAnime using Python. 
-
-ToDo:
-- [x] Restructure code base to use class code base
-- [x] Make downloader (Internal downloader done, but it has slow download speed)
-- ~~Play on player like mpv or vlc~~ (I think this function not needed)
-- Get top current airing anime (Working on it)
-
 The project is a work in progress, not finished yet. But, the code works well, feel free to take part of the code.
+
+### What can be done
+* Search anime by name
+* Get anime details
+* Get airing episode urls
+* Get download and/or streaming url
+* Show airing schedule
+* Download anime
 
 ### Getting Started
 #### Pre-Requisites
