@@ -39,9 +39,7 @@ class HTTPDownloader:
 					return True # skipping download
 
 		except Exception as e:
-			raise e
-		finally:
-			pass
+			print(e)
 
 
 	def download(self, source, save_filename):
@@ -83,8 +81,6 @@ class HTTPDownloader:
 
 			return download_filename
 		except Exception as e:
-			raise e
-		except TypeError as e:
-			raise e
+			print(e)
 		finally:
 			print("\n[!] Download finished.")

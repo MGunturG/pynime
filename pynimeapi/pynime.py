@@ -49,8 +49,8 @@ class PyNime:
       else:
         return anime_result
 
-    except requests.exceptions.ConnectionError:
-      print("Network Error.")
+    except Exception as e:
+      print(e)
 
 
   def get_anime_details(self, anime_category_url: str):
@@ -95,10 +95,8 @@ class PyNime:
 
       return anime_info
 
-    except AttributeError:
-      print("Invalid argument given!")
-    except requests.exceptions.ConnectionError:
-      print("Network Error.")
+    except Exception as e:
+      print(e)
 
 
   def get_episode_urls(self, anime_category_url: str) -> list:
@@ -125,10 +123,8 @@ class PyNime:
 
       return eps_list
 
-    except AttributeError:
-      print("Invalid argument given!")
-    except requests.exceptions.ConnectionError:
-      print("Network Error.")
+    except Exception as e:
+      print(e)
 
 
   def get_download_link(self, anime_episode_url: str) -> DownloadLinkObj:
@@ -171,10 +167,8 @@ class PyNime:
 
       return download_links
 
-    except AttributeError:
-      print("Invalid argument given!")
-    except requests.exceptions.ConnectionError:
-      print("Network Error.")
+    except Exception as e:
+      print(e)
 
 
   def grab_download(self, anime_title: str, episode: int, resolution: int):
