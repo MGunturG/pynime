@@ -1,0 +1,12 @@
+# ignore file
+*.pyc
+*.pyo
+*.mp4
+*.avi
+*.mkv
+
+# ignore folder
+__pycache__/
+build/
+dist/
+pynime.egg-info/
