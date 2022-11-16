@@ -1,6 +1,7 @@
 import re
 import os
 import m3u8
+import requests
 
 from urllib.parse import urlparse
 
@@ -18,15 +19,15 @@ class PlaylistParser():
 				find_resolution = re.findall(self.regex_pattern, playlist_string)
 				find_resolution = [i.replace("x","") for i in find_resolution]
 
-				# get uri base
+				# get url base
 				url_parse = urlparse(playlist_url)
-				uri_base = os.path.dirname(
+				url_base = os.path.dirname(
 					f"{url_parse.scheme}://{url_parse.netloc}{url_parse.path}"
 				)
 
 				stream = {}
 				for index, resolution in enumerate(find_resolution):
-					stream[resolution] = f"{uri_base}/{playlist.playlists[index].uri}"
+					stream[resolution] = f"{url_base}/{playlist.playlists[index].uri}"
 
 				return stream
 
@@ -35,3 +36,16 @@ class PlaylistParser():
 		except Exception as e:
 			print(e)
 
+
+	def validate_segment_url(self, segment_url: str, playlist_url: str):
+		try:
+			url_parse = urlparse(playlist_url)
+			url_base = os.path.dirname(
+				f"{url_parse.scheme}://{url_parse.netloc}{url_parse.path}"
+			)
+
+			r = requests.get(segment_url)
+			if r.status_code == 200:
+				return segment_url
+		except:
+			return f"{url_base}/{segment_url}"

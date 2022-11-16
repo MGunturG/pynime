@@ -1,10 +1,13 @@
 import re
+import os
 import json
+import m3u8
+import shutil
 import requests
+import threading
 from bs4 import BeautifulSoup
 
 from pynimeapi.classes.datatype import *
-from pynimeapi.classes.color import bcolors
 
 from pynimeapi.downloader.http_downloader import HTTPDownloader
 downloader = HTTPDownloader()
@@ -17,9 +20,7 @@ from pynimeapi.streaming.url_handler import streamUrl
 
 
 class PyNime:
-  def __init__(self, auth: str, gogoanime: str, base_url: str = "https://gogoanime.dk"):
-    self.auth_token = auth
-    self.gogoanime_token = gogoanime
+  def __init__(self, base_url: str = "https://gogoanime.dk"):
     self.baseURL = base_url
 
 
@@ -44,7 +45,7 @@ class PyNime:
           category_url = f'{self.baseURL}{i.contents[1].get("href")}'))
 
       if not anime_result:
-        print(f"{bcolors.WARNING}[!] Anime not found!{bcolors.ENDC}")
+        print(f"[!] Anime not found!")
         return None
       else:
         return anime_result
@@ -127,102 +128,15 @@ class PyNime:
       print(e)
 
 
-  def get_download_link(self, anime_episode_url: str) -> DownloadLinkObj:
-    '''
-    Get download link on given anime episode link. Example of anime episode link
-    anime_episode_link = 'https://www1.gogoanime.ee/hataraku-maou-sama-2nd-season-episode-6'
-    (It's link for anime Hataraku Maou Sama 2nd Season Episode 6)
+  def get_stream_urls(self, anime_episode_url: str):
+    playlist = PlaylistParser()
+    urlhandle = streamUrl(anime_episode_url)
+    stream_urls = urlhandle.stream_url()
 
-    To get the download link of the desired resolution, use:
-    .link_360 to get 360p download link
-    .link_480 to get 480p download link
-    and so on... maximum resolution availabe are 1080p.
+    result = playlist.parser(stream_urls)
 
-    '''
-    try:
-      download_links = DownloadLinkObj()
-      token = {
-          "auth": self.auth_token,
-          "gogoanime": self.gogoanime_token
-      }
+    return result
 
-      r = requests.get(anime_episode_url, cookies = token)
-      soup = BeautifulSoup(r.content, "lxml")
-      download_div = soup.find("div", {'class': 'cf-download'}).findAll('a')
-
-      for data in download_div:
-        video_resulotion = re.search("x([0-9]+)", re.sub(r"[\n\t\s]*","",data.string)).group(1)
-
-        if video_resulotion == "360":
-          download_links.link_360 = f'{data["href"]}'
-
-        elif video_resulotion == "480":
-          download_links.link_480 = f'{data["href"]}'
-
-        elif video_resulotion == "720":
-          download_links.link_720 = f'{data["href"]}'
-
-        elif video_resulotion == "1080":
-          download_links.link_1080 = f'{data["href"]}'
-
-      return download_links
-
-    except Exception as e:
-      print(e)
-
-
-  def grab_download(self, anime_title: str, episode: int, resolution: int):
-    '''
-    Fast query to get anime download link.
-    It will return download link as string.
-    '''
-    search_anime = self.search_anime(anime_title)
-
-    if search_anime:
-      eps = self.get_episode_urls(search_anime[0].category_url)
-
-      if (episode > len(eps) or episode == 0):
-        print(f"{bcolors.WARNING}[!] Unfortunately episode {episode} not released yet.{bcolors.ENDC}")
-        print(f"{bcolors.WARNING}[!] Latest episode is episode {len(eps)}.{bcolors.ENDC}")
-        return
-
-    else:
-      # If search query found nothing, return nothing.
-      # function search_anime will print message if nothing found.
-      return None
-
-    vid = self.get_download_link(eps[episode - 1])
-
-    if resolution == 360:
-      if vid.link_360 == None:
-        return None
-
-      else:
-        return vid.link_360
-
-    if resolution == 480:
-      if vid.link_480 == None:
-        return None
-
-      else:
-        return vid.link_480
-
-    if resolution == 720:
-      if vid.link_720 == None:
-        return None
-
-      else:
-        return vid.link_720
-
-    if resolution == 1080:
-      if vid.link_1080 == None:
-        return None
-        
-      else:
-        return vid.link_1080
-
-    # If resolution is not 360, 480, 720, or 1080 it will return None
-    return None
 
   def grab_stream(self, anime_title: str, episode: int, resolution: int):
     resolution = str(resolution)
@@ -234,34 +148,68 @@ class PyNime:
       eps = self.get_episode_urls(search_anime[0].category_url)
 
       if (episode > len(eps) or episode == 0):
-        print(f"{bcolors.WARNING}[!] Unfortunately episode {episode} not released yet.{bcolors.ENDC}")
-        print(f"{bcolors.WARNING}[!] Latest episode is episode {len(eps)}.{bcolors.ENDC}")
+        print(f"[!] Unfortunately episode {episode} not released yet.")
+        print(f"[!] Latest episode is episode {len(eps)}.")
         return None
 
     else:
       return None
 
     urlhandle = streamUrl(eps[episode-1])
-    stream_link = urlhandle.stream_url()
+    stream_urls = urlhandle.stream_url()
 
-    result = playlist.parser(stream_link)
+    result = playlist.parser(stream_urls)
 
     if resolution in result:
       return result[resolution]
     else:
+      print(f"[!] Available resolution are {list(result.keys())}.")
       return None
 
 
-  def download_video(self, video_download_link: str, file_name: str):
-    ''' Remember, all video uploaded on GoGoAnime is mp4 '''
+  def download_video(self, stream_url: str, filename: str):
+    segment_validator = PlaylistParser()
+    playlist = m3u8.load(stream_url)
+    segments = playlist.segments
+    filename = f"{filename}.ts" # file will be saved as ts file
 
-    # Check if file exists
-    if downloader.check_if_exists(video_download_link, file_name):
-      # File exists, skip download
-      return
-    else:
-      # Continue download the file
-      downloader.download(video_download_link, file_name)
+    threads = []
+    files = [] # only for listing ts files downloaded
+    if os.path.exists("temp"):
+      shutil.rmtree("temp")
+    if os.path.exists(filename):
+      os.remove(filename)
+    os.mkdir("temp")
+
+    # download ts files, save it to temp folder
+    for i, ts_file in enumerate(segments):
+      t = threading.Thread(
+        target = downloader.download,
+        args = (segment_validator.validate_segment_url(ts_file.uri, stream_url), f"temp/{i}.ts",)
+      )
+      threads.append(t)
+      files.append(f"temp/{i}.ts")
+
+    for t in threads:
+      t.start()
+
+    for t in threads:
+      t.join()
+
+    # merging downloaded ts files into single ts file
+    with open(filename, 'wb') as merged_ts:
+      for i, ts_file in enumerate(files):
+        
+        # check if ts_file downloaded
+        if os.path.exists(ts_file):
+          with open(ts_file, 'rb') as ts_file_to_merge:
+            shutil.copyfileobj(ts_file_to_merge, merged_ts)
+            ts_file_to_merge.close()
+        else:
+          # if not exists, re download the file
+          downloader.download(segment_validator.validate_segment_url(segments[i].uri, stream_url), f"temp/{ts_file}.ts")
+
+      shutil.rmtree("temp") # delete folder and files inside them after finished
 
 
   def get_schedule(self, unix_time: int):

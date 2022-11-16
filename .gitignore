@@ -4,9 +4,11 @@
 *.mp4
 *.avi
 *.mkv
+*.ts
 
 # ignore folder
 __pycache__/
 build/
 dist/
 pynime.egg-info/
+temp/

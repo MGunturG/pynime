@@ -3,8 +3,6 @@ import sys
 import time
 import requests
 
-from pynimeapi.classes.color import bcolors
-
 class HTTPDownloader:
 	def __init__(self):
 		self.chunksize = 16384
@@ -18,7 +16,7 @@ class HTTPDownloader:
 		This function will check if file already downloaded or not.
 
 		'''
-		saved_filename = f'{saved_filename}.mp4' # all videos uploaded on gogoanime is mp4 format
+		saved_filename = f'{saved_filename}'
 		
 		try:
 			with requests.get(source, headers = self.headers, stream = True) as r:
@@ -48,7 +46,7 @@ class HTTPDownloader:
 		I recommend user to copy link download and download the file using external downloader such Internet Download Manager (IDM).
 		'''
 		
-		download_filename = f'{save_filename}.mp4' # all videos uploaded on gogoanime is mp4 format
+		download_filename = f'{save_filename}'
 		
 		''' To calculate download speed, we need to know how much
 		time passed (elapsed time).
@@ -65,10 +63,10 @@ class HTTPDownloader:
 				file_size = r.headers.get('content-length')
 
 				with open(download_filename, 'wb') as f:
-					print(f"{bcolors.OKBLUE}[*]{bcolors.ENDC} Downloading {download_filename}")
+					print(f"[*] Downloading {download_filename}")
 					downloaded_byte = 0 # Initial downloaded bytes is always zero byte.
 					file_size = int(file_size)
-					print(f'{bcolors.OKBLUE}[*]{bcolors.ENDC} File size: {file_size//10**6} MB.') # convert bytes (B) to megabytes (MB), bytes that are divided by 10^6
+					print(f'[*] File size: {file_size//10**6} MB.') # convert bytes (B) to megabytes (MB), bytes that are divided by 10^6
 
 					for chunk in r.iter_content(chunk_size = self.chunksize):
 						downloaded_byte += len(chunk)
@@ -79,7 +77,6 @@ class HTTPDownloader:
 						sys.stdout.write("\r[*][%s%s] Status: %d%% | Speed: %.2f MB/s" % ('=' * done, ' ' * (50 - done), int(downloaded_byte/file_size * 100), download_speed))
 						sys.stdout.flush()
 
-			return download_filename
 		except Exception as e:
 			print(e)
 		finally:
