@@ -2,19 +2,19 @@ import re
 import os
 import json
 import m3u8
+import time
 import shutil
 import requests
 import threading
+
 from bs4 import BeautifulSoup
+from queue import Queue
 
 from pynimeapi.classes.datatype import *
-
 from pynimeapi.downloader.http_downloader import HTTPDownloader
 downloader = HTTPDownloader()
-
 from pynimeapi.schedule import GetSchedule
 schedule = GetSchedule()
-
 from pynimeapi.streaming.playlist_parser import PlaylistParser
 from pynimeapi.streaming.url_handler import streamUrl
 
@@ -188,13 +188,15 @@ class PyNime:
         args = (segment_validator.validate_segment_url(ts_file.uri, stream_url), f"temp/{i}.ts",)
       )
       threads.append(t)
-      files.append(f"temp/{i}.ts")
-
-    for t in threads:
       t.start()
+      files.append(f"temp/{i}.ts")
+      downloader.progress_bar(i + 1, len(segments), prefix = 'Adding threads', suffix = 'Complete')
+      time.sleep(0.2)
 
-    for t in threads:
+    print("[!] Done, waiting thread to finish.")
+    for i, t in enumerate(threads):
       t.join()
+      downloader.progress_bar(i + 1, len(threads), prefix = 'Progress', suffix = 'Complete')
 
     # merging downloaded ts files into single ts file
     with open(filename, 'wb') as merged_ts:
@@ -206,8 +208,7 @@ class PyNime:
             shutil.copyfileobj(ts_file_to_merge, merged_ts)
             ts_file_to_merge.close()
         else:
-          # if not exists, re download the file
-          downloader.download(segment_validator.validate_segment_url(segments[i].uri, stream_url), f"temp/{ts_file}.ts")
+          print("[!] Some file missing, aborting.")
 
       shutil.rmtree("temp") # delete folder and files inside them after finished
 

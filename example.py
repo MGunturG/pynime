@@ -52,7 +52,7 @@ print(grab_stream_url)
 # Download video. Video will be saved as TS file format.
 print(f"Available resolution : {list(stream_urls.keys())}")
 resolution = str(input("Select resolution: "))
-api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection}_{resolution}p")
+api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection + 1}_{resolution}p")
 
 # Get Schedule
 api.get_schedule(int(time.time()))

@@ -44,8 +44,11 @@ class PlaylistParser():
 				f"{url_parse.scheme}://{url_parse.netloc}{url_parse.path}"
 			)
 
-			r = requests.get(segment_url)
-			if r.status_code == 200:
+			# this is dumb
+			if "https" in segment_url:
 				return segment_url
-		except:
-			return f"{url_base}/{segment_url}"
+			else:
+				return f"{url_base}/{segment_url}"
+		except Exception as e:
+			print(e)
+			
