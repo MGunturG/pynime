@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 class PlaylistParser():
 	def __init__(self):
-		self.regex_pattern = r"x[0-9]+"
+		self.regex_pattern = r"x[0-9]+" # regex for searching video resolution
 
 	def parser(self, playlist_url: str):
 		try:
@@ -44,11 +44,11 @@ class PlaylistParser():
 				f"{url_parse.scheme}://{url_parse.netloc}{url_parse.path}"
 			)
 
-			# this is dumb
+			# this is dumb ways to validate URL.
+			# I'll update later.
 			if "https" in segment_url:
 				return segment_url
 			else:
 				return f"{url_base}/{segment_url}"
 		except Exception as e:
 			print(e)
-			

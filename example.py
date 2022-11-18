@@ -13,7 +13,7 @@ if search_result == None:
     raise SystemExit(0)
 
 ## Print anime found
-for i, animes in enumerate(search_result): 
+for i, animes in enumerate(search_result):
     print(f"{i} | {animes.title}")
 
 

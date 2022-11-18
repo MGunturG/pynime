@@ -5,30 +5,27 @@ import m3u8
 import time
 import shutil
 import requests
+
 import threading
+import concurrent.futures
 
 from bs4 import BeautifulSoup
-from queue import Queue
 
 from pynimeapi.classes.datatype import *
-from pynimeapi.downloader.http_downloader import HTTPDownloader
-downloader = HTTPDownloader()
 from pynimeapi.schedule import GetSchedule
-schedule = GetSchedule()
-from pynimeapi.streaming.playlist_parser import PlaylistParser
 from pynimeapi.streaming.url_handler import streamUrl
+from pynimeapi.streaming.playlist_parser import PlaylistParser
+from pynimeapi.downloader.http_downloader import HTTPDownloader
 
 
 class PyNime:
-  def __init__(self, base_url: str = "https://gogoanime.dk"):
-    self.baseURL = base_url
+  def __init__(self, base_url: str = "https://gogoanime.ar"):
+    self.baseURL = base_url # domain of GoGoAnime. please update regularly
 
 
   def search_anime(self, anime_title: str) -> SearchResultObj:
-    '''
-    Search anime on given title.
-    It will return a list of animes and their url in object.
-
+    ''' Search anime on given title.
+        It will return a list of animes and their url in object.
     '''
     try:
       anime_result = []
@@ -41,7 +38,7 @@ class PyNime:
 
       for idx, i in enumerate(result):
         anime_result.append(
-          SearchResultObj(title = f'{i.contents[1].get("title")}', 
+          SearchResultObj(title = f'{i.contents[1].get("title")}',
           category_url = f'{self.baseURL}{i.contents[1].get("href")}'))
 
       if not anime_result:
@@ -55,16 +52,14 @@ class PyNime:
 
 
   def get_anime_details(self, anime_category_url: str):
-    '''
-    Get basic anime info/details.
-    It will return an object.
-    .season        : season of anime aired
-    .synopsis      : plot of anime
-    .genres        : genres
-    .released      : year of released
-    .status        : status, ongoing or finished
-    .image_url     : anime cover image
-
+    ''' Get basic anime info/details.
+        It will return an object:
+            .season        : season of anime aired
+            .synopsis      : plot of anime
+            .genres        : genres
+            .released      : year of released
+            .status        : status, ongoing or finished
+            .image_url     : anime cover image
     '''
     try:
       detail_page = requests.get(anime_category_url)
@@ -101,12 +96,11 @@ class PyNime:
 
 
   def get_episode_urls(self, anime_category_url: str) -> list:
-    '''
-    Get total of anime episode available and urls per episode.
-    It will return a list of urls to anime episode page.
+    ''' Get total of anime episode available and urls per episode.
+        It will return a list of urls to anime episode page.
     '''
     try:
-      eps_list = [] # an empty list for storing links
+      eps_list = list() # an empty list for storing links
 
       r = requests.get(anime_category_url)
       anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
@@ -129,6 +123,9 @@ class PyNime:
 
 
   def get_stream_urls(self, anime_episode_url: str):
+    ''' Get streaming url on given anime episode page.
+        It will return urls and their video resolution in JSON format.
+    '''
     playlist = PlaylistParser()
     urlhandle = streamUrl(anime_episode_url)
     stream_urls = urlhandle.stream_url()
@@ -138,7 +135,10 @@ class PyNime:
     return result
 
 
-  def grab_stream(self, anime_title: str, episode: int, resolution: int):
+  def grab_stream(self, anime_title: str, episode: int, resolution = 1080):
+    ''' It just a shortcut for retrieve the streaming url.
+        As default, it will get the best resolution whics is 1080p.
+    '''
     resolution = str(resolution)
     playlist = PlaylistParser()
 
@@ -147,6 +147,7 @@ class PyNime:
     if search_anime:
       eps = self.get_episode_urls(search_anime[0].category_url)
 
+      # error handling if selected episode not available
       if (episode > len(eps) or episode == 0):
         print(f"[!] Unfortunately episode {episode} not released yet.")
         print(f"[!] Latest episode is episode {len(eps)}.")
@@ -163,52 +164,78 @@ class PyNime:
     if resolution in result:
       return result[resolution]
     else:
-      print(f"[!] Available resolution are {list(result.keys())}.")
+      print(f"[!] Available resolution are {list(result.keys())}. {resolution} not available.")
       return None
 
 
   def download_video(self, stream_url: str, filename: str):
+    ''' This download function is using internal download function I made.
+        Does not have good performance, but it's works.
+
+        It will download ts file, please use converter to convert-
+        -downloaded ts file to any video format you want.
+
+        *all video player support playing ts file.
+    '''
+
     segment_validator = PlaylistParser()
+    downloader = HTTPDownloader()
     playlist = m3u8.load(stream_url)
-    segments = playlist.segments
+
+    # create list to store video urls
+    playlist_segments = list()
+    for url in playlist.segments:
+        playlist_segments.append(url.uri)
+
     filename = f"{filename}.ts" # file will be saved as ts file
 
-    threads = []
-    files = [] # only for listing ts files downloaded
-    if os.path.exists("temp"):
-      shutil.rmtree("temp")
+    # check if file and temp folder exists
+    # if they exists, delete them
     if os.path.exists(filename):
       os.remove(filename)
+
+    if os.path.exists("temp"):
+      shutil.rmtree("temp")
+
+    # if they don't exists, create new temp folder
+    # for new downloading session
     os.mkdir("temp")
 
     # download ts files, save it to temp folder
-    for i, ts_file in enumerate(segments):
-      t = threading.Thread(
-        target = downloader.download,
-        args = (segment_validator.validate_segment_url(ts_file.uri, stream_url), f"temp/{i}.ts",)
-      )
-      threads.append(t)
-      t.start()
-      files.append(f"temp/{i}.ts")
-      downloader.progress_bar(i + 1, len(segments), prefix = 'Adding threads', suffix = 'Complete')
-      time.sleep(0.2)
+    # folder "temp" automaticly created by "http_downloader.py" as default.
+    #
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        thread_complete = 0
+        total_downloaded_bytes = 0
+        files = list()
 
-    print("[!] Done, waiting thread to finish.")
-    for i, t in enumerate(threads):
-      t.join()
-      downloader.progress_bar(i + 1, len(threads), prefix = 'Progress', suffix = 'Complete')
+        for thread_result in executor.map(downloader.download, playlist_segments):
+            downloaded_filename, current_downloaded_byte = thread_result
+
+            total_downloaded_bytes += current_downloaded_byte
+            thread_complete += 1
+            files.append(downloaded_filename)
+
+            downloader.progress_bar(
+                iteration = thread_complete,
+                total = int(len(playlist_segments)),
+                prefix = 'Downloading',
+                suffix = f'Complete - Downloaded bytes : {total_downloaded_bytes//10**6} MB.',
+                length = 30,
+            )
+
+    sorted(files) # just to ensure file order is appropriate
 
     # merging downloaded ts files into single ts file
     with open(filename, 'wb') as merged_ts:
       for i, ts_file in enumerate(files):
-        
-        # check if ts_file downloaded
-        if os.path.exists(ts_file):
+        if os.path.exists(ts_file): # check if all files are downloaded
           with open(ts_file, 'rb') as ts_file_to_merge:
             shutil.copyfileobj(ts_file_to_merge, merged_ts)
             ts_file_to_merge.close()
         else:
           print("[!] Some file missing, aborting.")
+          break
 
       shutil.rmtree("temp") # delete folder and files inside them after finished
 

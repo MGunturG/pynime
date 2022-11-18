@@ -5,6 +5,7 @@
 *.avi
 *.mkv
 *.ts
+test.py
 
 # ignore folder
 __pycache__/
