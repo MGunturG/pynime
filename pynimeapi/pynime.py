@@ -22,29 +22,26 @@ class PyNime:
     def __init__(self, base_url: str = "https://gogoanime.ar"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
-    # TODO: Hello Yoshi, you can use https://ajax.gogo-load.com/site/loadAjaxSearch?keyword={query} to search anime.
     def search_anime(self, anime_title: str) -> SearchResultObj:
-        ''' Search anime on given title.
-            It will return a list of animes and their url in object.
-        '''
+        """
+        Search anime on given title.
+        It will return a list of anime shows and their url in object.
+        """
         try:
             anime_result = []
-            anime_title = anime_title.replace(" ", "%20")
-            search_page_link = f'{self.baseURL}/search.html?keyword={anime_title}'
-            search_page = requests.get(search_page_link)
-            search_page = search_page.content
-            soup = BeautifulSoup(search_page, "html.parser")
-            result = soup.find_all("div", {"class": "img"})
+            r = requests.get(f"https://ajax.gogo-load.com/site/loadAjaxSearch?keyword={anime_title}")
 
-            for idx, i in enumerate(result):
-                anime_result.append(
-                    SearchResultObj(title=f'{i.contents[1].get("title")}',
-                                    category_url=f'{self.baseURL}{i.contents[1].get("href")}'))
+            if r:
+                title = [_.group(1) for _ in re.finditer(r"<\\/div>(.*?)<\\/a><\\/div>", r.text)]
+                url = [_.group(1) for _ in re.finditer(r"<a href=\\\"(.*?)\\\" ", r.text)]
 
-            if not anime_result:
-                print(f"[!] Anime not found!")
-                return None
-            else:
+                for i, v in enumerate(title):
+                    title = v.replace(r"\/", "/")
+                    category_url = url[i].replace(r"\/", "/")
+                    category_url = f"{self.baseURL}/{category_url}"
+                    anime_result.append(
+                        SearchResultObj(title=title, category_url=category_url))
+
                 return anime_result
 
         except Exception as e:
