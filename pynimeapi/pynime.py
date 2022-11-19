@@ -22,7 +22,7 @@ class PyNime:
     def __init__(self, base_url: str = "https://gogoanime.ar"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
-    # TODO: Hello Yoshi, you can use https://ajax.gogo-load.com/site/loadAjaxSearch?keyword={query} to search anime
+    # TODO: Hello Yoshi, you can use https://ajax.gogo-load.com/site/loadAjaxSearch?keyword={query} to search anime.
     def search_anime(self, anime_title: str) -> SearchResultObj:
         ''' Search anime on given title.
             It will return a list of animes and their url in object.
