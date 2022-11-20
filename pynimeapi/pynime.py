@@ -232,4 +232,5 @@ class PyNime:
             shutil.rmtree("temp")  # delete folder and files inside them after finished
 
     def get_schedule(self, unix_time: int):
+        schedule = GetSchedule()
         schedule.print_schedule(unix_time)

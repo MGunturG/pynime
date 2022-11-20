@@ -7,7 +7,7 @@ The project is a work in progress, not finished yet. But, the code works well, f
 * Search anime by name
 * Get anime details
 * Get airing episode urls
-* Get ~~download and/or~~ streaming url (m3u8)
+* Get streaming url (m3u8)
 * Show airing schedule
 * Download anime
 
