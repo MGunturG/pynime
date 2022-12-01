@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.39' 
+VERSION = '0.1.38' 
 DESCRIPTION = 'Yet simple API wrapper for GoGoAnime'
 LONG_DESCRIPTION = 'PyNime is a (simple) straightforward Python3 script to scrape GoGoAnime using Python. The project is a work in progress, not finished yet. But, the code works well, feel free to take part of the code.'
 
