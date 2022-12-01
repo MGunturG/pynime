@@ -6,6 +6,7 @@
 *.mkv
 *.ts
 test.py
+secret.txt
 
 # ignore folder
 __pycache__/
