@@ -47,7 +47,7 @@ class PyNime:
         except Exception as e:
             print(e)
 
-    def get_anime_details(self, anime_category_url: str):
+    def get_anime_details(self, anime_category_url: str) -> AnimeDetailsObj:
         ''' Get basic anime info/details.
             It will return an object:
                 .season        : season of anime aired
@@ -128,7 +128,7 @@ class PyNime:
 
         return result
 
-    def grab_stream(self, anime_title: str, episode: int, resolution=1080):
+    def grab_stream(self, anime_title: str, episode: int, resolution=1080) -> str:
         ''' It just a shortcut for retrieve the streaming url.
             As default, it will get the best resolution whics is 1080p.
         '''
@@ -227,10 +227,36 @@ class PyNime:
                         ts_file_to_merge.close()
                 else:
                     print("[!] Some file missing, aborting.")
+                    return None
                     break
 
             shutil.rmtree("temp")  # delete folder and files inside them after finished
 
+        return filename
+
     def get_schedule(self, unix_time: int):
         schedule = GetSchedule()
         schedule.print_schedule(unix_time)
+
+    def get_recent_release(self, page=1) -> RecentAnimeObj:
+        try:
+            recent_release_list = list()
+            response = requests.get(
+                f"https://ajax.gogo-load.com/ajax/page-recent-release.html?page={page}").text
+
+            regex_filter = r"<li>\s*\n.*\n.*<a\s*href=[\"'](?P<href>.*?-episode-(?P<episode>\d+))[\"']\s*title=[\"'](?P<title>.*?)[\"']"
+
+            if response:
+                matches = list(re.findall(regex_filter, response, re.MULTILINE))
+
+                for match in matches:
+                    recent_release_list.append(
+                        RecentAnimeObj(
+                            title=match[2],
+                            latest_episode=int(match[1]),
+                            latest_episode_url=f"{self.baseURL}{match[0]}"))
+
+                return recent_release_list
+        except Exception as e:
+            print(e)
+

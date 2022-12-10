@@ -1,9 +1,11 @@
+import re
 import json
 import requests
 
 from datetime import datetime
 from collections import defaultdict
 
+from pynimeapi.classes.datatype import *
 from pynimeapi.classes.color import bcolors
 
 class GetSchedule:
@@ -35,7 +37,6 @@ class GetSchedule:
 		        }
 		    }
 		}"""
-
 
 
 	def arrange_template(self, data):

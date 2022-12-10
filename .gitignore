@@ -6,11 +6,10 @@
 *.mkv
 *.ts
 test.py
-secret.txt
 
 # ignore folder
-__pycache__/
-build/
-dist/
-pynime.egg-info/
 temp/
+dist/
+build/
+__pycache__/
+pynime.egg-info/

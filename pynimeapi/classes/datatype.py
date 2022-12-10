@@ -16,3 +16,9 @@ class AnimeDetailsObj:
 		self.released = released
 		self.status = status
 		self.image_url = image_url
+
+class RecentAnimeObj:
+	def __init__(self, title, latest_episode, latest_episode_url):
+		self.title = title
+		self.latest_episode = latest_episode
+		self.latest_episode_url = latest_episode_url

@@ -54,5 +54,12 @@ print(f"Available resolution : {list(stream_urls.keys())}")
 resolution = str(input("Select resolution: "))
 api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection + 1}_{resolution}p")
 
+# Get recent uploaded anime
+recent_anime = api.get_recent_release(page=1)
+
+for anime in recent_anime:
+    # print first 20 anime recently uploaded on GoGoAnime homepage
+    print(f"{anime.title} [EP : {anime.latest_episode}] [URL : {anime.latest_episode_url}]")
+
 # Get Schedule
 api.get_schedule(int(time.time()))
