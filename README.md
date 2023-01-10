@@ -5,9 +5,9 @@
 PyNime is a (simple) straightforward Python3 script to scrape GoGoAnime using Python.
 The project is a work in progress, not finished yet. But, the code works well, feel free to take part of the code.
 
-### What can be done
+### What Can be Done?
 
-- Search anime by name
+- Search anime by title
 - Get anime details
 - Get airing episode urls
 - Get streaming url (m3u8)
@@ -18,7 +18,7 @@ The project is a work in progress, not finished yet. But, the code works well, f
 
 For complete code, see `example.py`.
 
-#### Initialize the API
+### 1. Initialize the API
 
 First, you need to initialize the PyNime class.
 
@@ -29,7 +29,7 @@ api = PyNime(base_url = "https://gogoanime.bid")
 
 > **Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanime.bid
 
-#### Search an Anime
+### 2. Search an Anime
 
 You can search anime by title using `search_anime`. It will return result as `SearchResultObj` which contains two argument `title` and `category_url`.
 
@@ -45,7 +45,7 @@ for i in search_result:
 
 > **Note:** `.category_url` is an URL to anime details page. Used for function that need `anime_category_url` as input.
 
-#### Get Anime Details
+### 3. Get Anime Details
 
 You can get a basic details of anime using `get_anime_details` function. It will return anime details as `AnimeDetailsObj`.
 Details of anime contains :
@@ -74,7 +74,7 @@ print(anime_details.image_url)
 
 > **Note:** Function `get_anime_details` input argument is `anime_category_url` which need anime details page URL.
 
-#### Get Anime Episode URLs
+### 4. Get Anime Episode URLs
 
 Get total of anime episode available and url per episode using `get_episode_urls`. Will return list of URLs.
 
@@ -95,7 +95,7 @@ for url in episode_urls:
 print(len(episode_urls)) # 12
 ```
 
-#### Get Streaming URLs
+### 5. Get Streaming URLs
 
 Get streaming URL. The URL is link to M3U8 file. We have two function for this.
 
@@ -114,7 +114,7 @@ grab_stream_url = api.grab_stream(anime_title = "yofukashi no uta", episode = 1,
 print(grab_stream_url)
 ```
 
-#### Download
+### 6. Download
 
 To be clear, using internal downloader (this function) might be have slow download speed. I recommend user to copy link download and download the file using external downloader.
 
@@ -127,7 +127,7 @@ api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_det
 
 > **Note:** Recommended download manager XTREME DOWNLOAD MANAGER (XDM). Github : https://github.com/subhra74/xdm
 
-#### Get Schedule
+### 7. Get Schedule
 
 Get the schedule from today to a week ahead.
 
@@ -138,7 +138,7 @@ api.get_schedule() # just simple call
 
 > **Note:** Need UNIX in integer. Return nothing, this function only print the schedule. Will fix later.
 
-#### Extra, get recent uploaded anime
+### 8. Extra, get recent uploaded anime
 
 This function will return 20 anime title of animes in list from GoGoAnime main page.
 
