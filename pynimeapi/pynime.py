@@ -1,5 +1,6 @@
 import re
 import os
+import time
 import json
 import m3u8
 import time
@@ -234,7 +235,8 @@ class PyNime:
 
         return filename
 
-    def get_schedule(self, unix_time: int):
+    def get_schedule(self):
+        unix_time = int(time.time())
         schedule = GetSchedule()
         schedule.print_schedule(unix_time)
 

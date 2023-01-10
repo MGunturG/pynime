@@ -2,7 +2,7 @@ import time
 from pynimeapi import PyNime
 
 # Init the API
-api = PyNime(base_url = "https://gogoanime.dk")
+api = PyNime(base_url = "https://gogoanime.bid")
 
 # Search an anime
 anime_title = input("Input anime title: ")
@@ -32,11 +32,11 @@ print(anime_details.image_url)
 
 # Get urls for available episodes
 # return list of urls
-episodes = api.get_episode_urls(anime_category_url = search_result[anime_selection].category_url)
+episode_urls = api.get_episode_urls(anime_category_url = search_result[anime_selection].category_url)
 
 ## Print all episodes urls
-for i, ep_urls in enumerate(episodes):
-    print(f"{i+1} | {ep_urls}")
+for i, url in enumerate(episode_urls):
+    print(f"{i+1} | {url}")
 
 ## Select episode
 episode_selection = int(input("Select episode: ")) - 1
