@@ -44,7 +44,7 @@ class GetSchedule:
 		template = defaultdict(lambda: defaultdict(list))
 
 		for airing in data[::1]:
-			datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0)) # Add 2 hour
+			datetime_object = datetime.fromtimestamp(airing.get("airingAt", 0))
 			template[format(datetime_object, "%b. %d, %A")][
 				(format(datetime_object, "%X"), datetime_object)
 			].append({
