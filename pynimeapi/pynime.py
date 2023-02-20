@@ -236,7 +236,7 @@ class PyNime:
         return filename
 
     def get_schedule(self):
-        unix_time = int(time.time())
+        unix_time = int(time.mktime(time.localtime()))
         schedule = GetSchedule()
         schedule.print_schedule(unix_time)
 
