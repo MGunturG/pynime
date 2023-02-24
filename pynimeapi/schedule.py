@@ -8,6 +8,9 @@ from collections import defaultdict
 from pynimeapi.classes.datatype import *
 from pynimeapi.classes.color import bcolors
 
+# This class is not part from GoGoAnime website.
+# Instead, this use GraphQL API from Anilist
+
 class GetSchedule:
 	def __init__(self):
 		# anilist API backend URL

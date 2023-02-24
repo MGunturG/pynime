@@ -60,7 +60,7 @@ class PyNime:
         '''
         try:
             detail_page = requests.get(anime_category_url)
-            soup = BeautifulSoup(detail_page.text, "html.parser")
+            soup = BeautifulSoup(detail_page.text, "lxml")
             info_body = soup.find("div", {"class": "anime_info_body_bg"})
             image_url = info_body.find("img")["src"]
             other_info = info_body.find_all("p", {"class": "type"})
@@ -70,7 +70,7 @@ class PyNime:
             synopsis = other_info[1].text.replace("\n", "")
             genres = [
                 x["title"]
-                for x in BeautifulSoup(str(other_info[2]), "html.parser").find_all("a")
+                for x in BeautifulSoup(str(other_info[2]), "lxml").find_all("a")
             ]
             released = other_info[3].text.replace("Released: ", "")
             status = other_info[4].text.replace("\n", "").replace("Status: ", "")
@@ -104,7 +104,7 @@ class PyNime:
             res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",
                                params={"ep_start": 0, "ep_end": 9999, "id": anime_id}, )
 
-            soup = BeautifulSoup(res.content, "html.parser")
+            soup = BeautifulSoup(res.content, "lxml")
             eps_urls = soup.find_all("a")
 
             # Append found links to list

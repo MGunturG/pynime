@@ -3,6 +3,9 @@ class SearchResultObj:
 		self.title = title
 		self.category_url = category_url
 
+	def __str__(self):
+		return f"title: {self.title} | category_url: {self.category_url}"
+
 class AnimeDetailsObj:
 	def __init__(
 		self, season: str, title: str,

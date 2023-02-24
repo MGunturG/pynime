@@ -56,13 +56,13 @@ class streamUrl:
 
 	def get_data(self, embed_url):
 		r = self.session.get(embed_url)
-		soup = BeautifulSoup(r.content, "html.parser")
+		soup = BeautifulSoup(r.content, "lxml")
 		crypto = soup.find("script", {"data-name": "episode"})
 		return crypto["data-value"]
 
 	def stream_url(self):
 		r = self.session.get(self.episode_link)
-		soup = BeautifulSoup(r.content, "html.parser")
+		soup = BeautifulSoup(r.content, "lxml")
 		link = soup.find("a", {"class": "active", "rel": "1"})
 		embed_url = f'https:{link["data-video"]}'
 
