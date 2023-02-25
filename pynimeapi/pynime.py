@@ -23,6 +23,9 @@ class PyNime:
     def __init__(self, base_url: str = "https://gogoanime.ar"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
+    def version(self):
+        return "0.1.44"
+
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
         Search anime on given title.
@@ -35,13 +38,20 @@ class PyNime:
             if r:
                 title = [_.group(1) for _ in re.finditer(r"<\\/div>(.*?)<\\/a><\\/div>", r.text)]
                 url = [_.group(1) for _ in re.finditer(r"<a href=\\\"(.*?)\\\" ", r.text)]
-
+                picture = [_.group(1) for _ in re.finditer(r"style='background:\surl[\(']\\(.*?)[\)']", r.text)]
+                
                 for i, v in enumerate(title):
                     title = v.replace(r"\/", "/")
                     category_url = url[i].replace(r"\/", "/")
                     category_url = f"{self.baseURL}/{category_url}"
+                    picture_url = picture[i].replace(r"\/","/").replace(r'"', "")[:-1]
                     anime_result.append(
-                        SearchResultObj(title=title, category_url=category_url))
+                        SearchResultObj(
+                            title=title, 
+                            category_url=category_url,
+                            picture_url=picture_url,
+                            )
+                        )
 
                 return anime_result
 
@@ -246,7 +256,7 @@ class PyNime:
             response = requests.get(
                 f"https://ajax.gogo-load.com/ajax/page-recent-release.html?page={page}").text
 
-            regex_filter = r"<li>\s*\n.*\n.*<a\s*href=[\"'](?P<href>.*?-episode-(?P<episode>\d+))[\"']\s*title=[\"'](?P<title>.*?)[\"']"
+            regex_filter = r"<li>\s*\n.*\n.*<a\shref=[\"'](?P<href>.*?-episode-(?P<episode>\d+))[\"']\s*title=[\"'](?P<title>.*?)[\"']>\n.*<img\ssrc=[\"'](?P<img>.*?)[\"']"
 
             if response:
                 matches = list(re.findall(regex_filter, response, re.MULTILINE))
@@ -256,7 +266,10 @@ class PyNime:
                         RecentAnimeObj(
                             title=match[2],
                             latest_episode=int(match[1]),
-                            latest_episode_url=f"{self.baseURL}{match[0]}"))
+                            latest_episode_url=f"{self.baseURL}{match[0]}",
+                            picture_url=match[3],
+                        )
+                    )
 
                 return recent_release_list
         except Exception as e:
