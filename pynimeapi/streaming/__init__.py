@@ -1,2 +1,2 @@
 from pynimeapi.streaming.playlist_parser import PlaylistParser
-from pynimeapi.streaming.url_handler import streamUrl
+from pynimeapi.streaming.extractor import streamExtractor

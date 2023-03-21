@@ -42,17 +42,20 @@ for i, url in enumerate(episode_urls):
 episode_selection = int(input("Select episode: ")) - 1
 
 ## look for stream urls
-stream_urls = api.get_stream_urls(anime_episode_url = episodes[episode_selection])
+stream_urls = api.get_stream_urls(anime_episode_url = episode_urls[episode_selection])
 print(stream_urls) # output as json, keys are resolution of the stream video
 
 ## fast query for grabbing stream url
 grab_stream_url = api.grab_stream(anime_details.title, episode = 1, resolution = 1080)
 print(grab_stream_url)
 
+'''
+Download function is now depreciated, will be fixed in the future
+'''
 # Download video. Video will be saved as TS file format.
-print(f"Available resolution : {list(stream_urls.keys())}")
-resolution = str(input("Select resolution: "))
-api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection + 1}_{resolution}p")
+# print(f"Available resolution : {list(stream_urls.keys())}")
+# resolution = str(input("Select resolution: "))
+# api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection + 1}_{resolution}p")
 
 # Get recent uploaded anime
 recent_anime = api.get_recent_release(page=1)
@@ -62,4 +65,4 @@ for anime in recent_anime:
     print(f"{anime.title} [EP : {anime.latest_episode}] [URL : {anime.latest_episode_url}]")
 
 # Get Schedule
-api.get_schedule(int(time.time()))
+api.get_schedule()

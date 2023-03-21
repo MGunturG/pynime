@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 
 from pynimeapi.classes.datatype import *
 from pynimeapi.schedule import GetSchedule
-from pynimeapi.streaming.url_handler import streamUrl
+from pynimeapi.streaming.extractor import streamExtractor
 from pynimeapi.streaming.playlist_parser import PlaylistParser
 from pynimeapi.downloader.http_downloader import HTTPDownloader
 
@@ -132,10 +132,10 @@ class PyNime:
             It will return urls and their video resolution in JSON format.
         '''
         playlist = PlaylistParser()
-        urlhandle = streamUrl(anime_episode_url)
-        stream_urls = urlhandle.stream_url()
+        url_extractor = streamExtractor()
+        stream_url = url_extractor.extract(anime_episode_url)
 
-        result = playlist.parser(stream_urls)
+        result = playlist.parser(stream_url)
 
         return result
 
@@ -160,10 +160,10 @@ class PyNime:
         else:
             return None
 
-        urlhandle = streamUrl(eps[episode - 1])
-        stream_urls = urlhandle.stream_url()
+        url_extractor = streamExtractor()
+        stream_url = url_extractor.extract(eps[episode - 1])
 
-        result = playlist.parser(stream_urls)
+        result = playlist.parser(stream_url)
 
         if resolution in result:
             return result[resolution]

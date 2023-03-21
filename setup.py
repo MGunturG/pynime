@@ -15,7 +15,7 @@ setup(
         long_description=LONG_DESCRIPTION,
         long_description_content_type="text/markdown",
         packages=find_packages(),
-        install_requires=['beautifulsoup4', 'requests', 'pycryptodome', 'm3u8', 'lxml'],
+        install_requires=['beautifulsoup4', 'requests', 'pycryptodome', 'm3u8', 'lxml', 'cssselect'],
 
         keywords=['python', 'downloader', 'anime', 'webscrapping', 'beautifulsoup4', 'gogoanime', 'gogoanime-scraper'],
         classifiers= [

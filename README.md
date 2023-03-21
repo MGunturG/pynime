@@ -12,7 +12,7 @@ The project is a work in progress, not finished yet. But, the code works well, f
 - Get airing episode urls
 - Get streaming url (m3u8)
 - Show airing schedule
-- Download anime
+- ~~Download anime~~
 
 ### Example Usage of API
 
@@ -102,7 +102,7 @@ Get streaming URL. The URL is link to M3U8 file. We have two function for this.
 ```Python
 ...
 # First function
-stream_urls = api.get_stream_urls(anime_episode_url = episodes[0]) # get streaming URL for first episode
+stream_urls = api.get_stream_urls(anime_episode_url = episode_urls[0]) # get streaming URL for first episode
 print(stream_urls) # output as json, keys are resolution of the stream video
 
 # Get available video res
@@ -114,9 +114,10 @@ grab_stream_url = api.grab_stream(anime_title = "yofukashi no uta", episode = 1,
 print(grab_stream_url)
 ```
 
-### 6. Download
+### ~~6. Download~~
+Download function is now depreciated, will be fixed in the future.
 
-To be clear, using internal downloader (this function) might be have slow download speed. I recommend user to copy link download and download the file using external downloader.
+~~To be clear, using internal downloader (this function) might be have slow download speed. I recommend user to copy link download and download the file using external downloader.~~
 
 ```Python
 ...
@@ -125,7 +126,7 @@ episode_selection = 1 # this means episode 2
 api.download_video(stream_url = stream_urls[resolution], filename = f"{anime_details.title}_EP{episode_selection + 1}_{resolution}p")
 ```
 
-> **Note:** Recommended download manager XTREME DOWNLOAD MANAGER (XDM). Github : https://github.com/subhra74/xdm
+> ~~**Note:** Recommended download manager XTREME DOWNLOAD MANAGER (XDM). Github : https://github.com/subhra74/xdm~~
 
 ### 7. Get Schedule
 
