@@ -13,3 +13,4 @@ dist/
 build/
 __pycache__/
 pynime.egg-info/
+venv/

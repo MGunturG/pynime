@@ -18,7 +18,7 @@ class streamExtractor:
 
 	def get_embed_url(self, episode_url):
 		content_parsed = htmlparser.fromstring(requests.get(episode_url).text)
-		return f"https:{content_parsed.cssselect('iframe')[0].get('src')}"
+		return f"{content_parsed.cssselect('iframe')[0].get('src')}"
 
 
 	def get_quality(self, embed_url):

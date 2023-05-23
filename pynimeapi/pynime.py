@@ -1,13 +1,10 @@
 import re
 import os
-import time
-import json
 import m3u8
 import time
 import shutil
 import requests
 
-import threading
 import concurrent.futures
 
 from bs4 import BeautifulSoup
@@ -20,11 +17,11 @@ from pynimeapi.downloader.http_downloader import HTTPDownloader
 
 
 class PyNime:
-    def __init__(self, base_url: str = "https://gogoanime.ar"):
+    def __init__(self, base_url: str = "https://gogoanime.cl"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
-        return "0.1.44"
+        return "0.1.55"
 
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
@@ -239,7 +236,6 @@ class PyNime:
                 else:
                     print("[!] Some file missing, aborting.")
                     return None
-                    break
 
             shutil.rmtree("temp")  # delete folder and files inside them after finished
 
@@ -274,4 +270,3 @@ class PyNime:
                 return recent_release_list
         except Exception as e:
             print(e)
-
