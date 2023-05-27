@@ -130,43 +130,49 @@ class PyNime:
         '''
         playlist = PlaylistParser()
         url_extractor = streamExtractor()
-        stream_url = url_extractor.extract(anime_episode_url)
 
-        result = playlist.parser(stream_url)
-
-        return result
+        try:
+            stream_url = url_extractor.extract(anime_episode_url)
+            result = playlist.parser(stream_url)
+            
+            return result    
+        except Exception as e:
+            print(e)
 
     def grab_stream(self, anime_title: str, episode: int, resolution=1080) -> str:
         ''' It just a shortcut for retrieve the streaming url.
             As default, it will get the best resolution whics is 1080p.
         '''
-        resolution = str(resolution)
-        playlist = PlaylistParser()
+        try:
+            resolution = str(resolution)
+            playlist = PlaylistParser()
 
-        search_anime = self.search_anime(anime_title)
+            search_anime = self.search_anime(anime_title)
 
-        if search_anime:
-            eps = self.get_episode_urls(search_anime[0].category_url)
+            if search_anime:
+                eps = self.get_episode_urls(search_anime[0].category_url)
 
-            # error handling if selected episode not available
-            if (episode > len(eps) or episode == 0):
-                print(f"[!] Unfortunately episode {episode} not released yet.")
-                print(f"[!] Latest episode is episode {len(eps)}.")
+                # error handling if selected episode not available
+                if (episode > len(eps) or episode == 0):
+                    print(f"[!] Unfortunately episode {episode} not released yet.")
+                    print(f"[!] Latest episode is episode {len(eps)}.")
+                    return None
+
+            else:
                 return None
 
-        else:
-            return None
+            url_extractor = streamExtractor()
+            stream_url = url_extractor.extract(eps[episode - 1])
 
-        url_extractor = streamExtractor()
-        stream_url = url_extractor.extract(eps[episode - 1])
+            result = playlist.parser(stream_url)
 
-        result = playlist.parser(stream_url)
-
-        if resolution in result:
-            return result[resolution]
-        else:
-            print(f"[!] Available resolution are {list(result.keys())}. {resolution} not available.")
-            return None
+            if resolution in result:
+                return result[resolution]
+            else:
+                print(f"[!] Available resolution are {list(result.keys())}. {resolution} not available.")
+                return None
+        except Exception as e:
+            print(e)
 
     def download_video(self, stream_url: str, filename: str):
         ''' This download function is using internal download function I made.
