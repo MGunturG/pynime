@@ -5,6 +5,8 @@ import time
 import shutil
 import requests
 
+from urllib.parse import urlparse
+
 import concurrent.futures
 
 from bs4 import BeautifulSoup
@@ -188,10 +190,14 @@ class PyNime:
         downloader = HTTPDownloader()
         playlist = m3u8.load(stream_url)
 
+        parsed_url_base = urlparse(stream_url)
+        base_url = f"{parsed_url_base.scheme}://{parsed_url_base.netloc}/{os.path.split(parsed_url_base.path)[0]}"
+
         # create list to store video urls
         playlist_segments = list()
         for url in playlist.segments:
-            playlist_segments.append(url.uri)
+            file_url = f"{base_url}/{url.uri}"
+            playlist_segments.append(file_url)
 
         filename = f"{filename}.ts"  # file will be saved as ts file
 
