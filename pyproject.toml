@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pynimeapi"
+version = "0.1.56"
+description = "Yet simple API wrapper for GoGoAnime"
+authors = ["Yoshkuni Kuniumi <101183804+yoshikuniii@users.noreply.github.com>"]
+license = "GNU General Public License v3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.2"
+pycryptodome = "^3.19.0"
+m3u8 = "^3.6.0"
+lxml = "^4.9.3"
+yarl = "^1.9.2"
+cssselect = "^1.2.0"
+certifi = "^2023.7.22"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
