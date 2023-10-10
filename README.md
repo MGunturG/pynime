@@ -24,10 +24,10 @@ First, you need to initialize the PyNime class.
 
 ```Python
 from pynimeapi import PyNime
-api = PyNime(base_url = "https://gogoanime.bid")
+api = PyNime(base_url = "https://gogoanimeapp.com")
 ```
 
-> **Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanime.bid
+> **Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanimeapp.com
 
 ### 2. Search an Anime
 
