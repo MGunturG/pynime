@@ -2,6 +2,7 @@ import re
 import json
 import yarl
 import base64
+import certifi
 import requests
 import lxml.html as htmlparser
 
@@ -17,7 +18,7 @@ class streamExtractor:
 	'''
 
 	def get_embed_url(self, episode_url):
-		content_parsed = htmlparser.fromstring(requests.get(episode_url).text)
+		content_parsed = htmlparser.fromstring(requests.get(episode_url, verify=certifi.where()).text)
 		return f"{content_parsed.cssselect('iframe')[0].get('src')}"
 
 
@@ -54,7 +55,11 @@ class streamExtractor:
 		content_id = parsed_url.query['id']
 		next_host = f"https://{parsed_url.host}/"
 
-		streaming_page = requests.get(url).content
+		if url[:2]=="//":
+			url = "https:" + url
+			streaming_page = requests.get(url).content
+		else:
+			streaming_page = requests.get(url).content
 
 		encryption_key, iv, decryption_key = (
 			_.group(1) for _ in KEYS_REGEX.finditer(streaming_page)

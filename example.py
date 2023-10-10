@@ -1,7 +1,7 @@
 from pynimeapi import PyNime
 
 # Init the API
-api = PyNime(base_url="https://gogoanime.cl")
+api = PyNime(base_url="https://gogoanimeapp.com")
 
 # Search an anime
 anime_title = input("Input anime title: ")

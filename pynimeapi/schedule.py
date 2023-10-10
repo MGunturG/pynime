@@ -1,5 +1,6 @@
 import re
 import json
+import certifi
 import requests
 
 from datetime import datetime
@@ -78,7 +79,8 @@ class GetSchedule:
 						"weekEnd": week_end,
 						"page": page
 					}
-				}
+				},
+				verify=certifi.where()
 			)
 
 			data = schedule_data.json().get("data", {}).get("Page", {})

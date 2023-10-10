@@ -3,6 +3,7 @@ import os
 import m3u8
 import time
 import shutil
+import certifi
 import requests
 
 import concurrent.futures
@@ -17,7 +18,7 @@ from pynimeapi.downloader.http_downloader import HTTPDownloader
 
 
 class PyNime:
-    def __init__(self, base_url: str = "https://gogoanime.cl"):
+    def __init__(self, base_url: str = "https://gogoanimeapp.com"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
@@ -66,7 +67,7 @@ class PyNime:
                 .image_url     : anime cover image
         '''
         try:
-            detail_page = requests.get(anime_category_url)
+            detail_page = requests.get(anime_category_url, verify=certifi.where())
             soup = BeautifulSoup(detail_page.text, "lxml")
             info_body = soup.find("div", {"class": "anime_info_body_bg"})
             image_url = info_body.find("img")["src"]
@@ -105,7 +106,7 @@ class PyNime:
         try:
             eps_list = list()  # an empty list for storing links
 
-            r = requests.get(anime_category_url)
+            r = requests.get(anime_category_url, verify=certifi.where())
             anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
 
             res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",
@@ -250,7 +251,7 @@ class PyNime:
         try:
             recent_release_list = list()
             response = requests.get(
-                f"https://ajax.gogo-load.com/ajax/page-recent-release.html?page={page}").text
+                f"https://ajax.gogo-load.com/ajax/page-recent-release.html?page={page}", verify=certifi.where()).text
 
             regex_filter = r"<li>\s*\n.*\n.*<a\shref=[\"'](?P<href>.*?-episode-(?P<episode>\d+))[\"']\s*title=[\"'](?P<title>.*?)[\"']>\n.*<img\ssrc=[\"'](?P<img>.*?)[\"']"
 
