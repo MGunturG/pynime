@@ -20,7 +20,7 @@ The project is a work in progress, not finished yet. But, the code works well, f
 
 For complete code, see `example.py`.
 <p align="center">
-<img src="./demo.gif"></p> 
+<img src="https://github.com/yoshikuniii/pynime/blob/main/pynimeapi/raw/demo.gif"></p> 
 
 ## 1. Initialize the API
 
