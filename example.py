@@ -24,7 +24,6 @@ print(anime_details.title)
 print(anime_details.season)
 print(anime_details.synopsis)
 print(anime_details.genres)  # output on list data type. Example : ['Comedy', 'Ecchi', 'Slice of Life']
-print(anime_details.released)
 print(anime_details.status)
 print(anime_details.image_url)
 

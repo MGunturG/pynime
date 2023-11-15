@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pynimeapi"
-version = "0.1.56"
+version = "0.1.57"
 description = "Yet simple API wrapper for GoGoAnime"
 authors = ["Yoshkuni Kuniumi <101183804+yoshikuniii@users.noreply.github.com>"]
 license = "GNU General Public License v3.0"

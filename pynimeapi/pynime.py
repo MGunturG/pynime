@@ -22,7 +22,7 @@ class PyNime:
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
-        return "0.1.56"
+        return "0.1.57"
 
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
@@ -62,7 +62,6 @@ class PyNime:
                 .season        : season of anime aired
                 .synopsis      : plot of anime
                 .genres        : genres
-                .released      : year of released
                 .status        : status, ongoing or finished
                 .image_url     : anime cover image
         '''
@@ -76,11 +75,16 @@ class PyNime:
             title = info_body.find("h1").text.strip()
             season = other_info[0].text.replace("\n", "").replace("Type: ", "")
             synopsis = other_info[1].text.replace("\n", "")
-            genres = [
-                x["title"]
-                for x in BeautifulSoup(str(other_info[2]), "lxml").find_all("a")
-            ]
-            released = other_info[3].text.replace("Released: ", "")
+
+            # look for genres
+            genres = [] # empty list
+            pattern_genres = re.compile(r'Genre:\s*(.*)$')
+            match_genres = pattern_genres.search(other_info[3].text.replace("\n", ""))
+            
+            if match_genres:
+                genres = match_genres.group(1).split(', ')
+
+
             status = other_info[4].text.replace("\n", "").replace("Status: ", "")
             image_url = image_url
 
@@ -89,7 +93,6 @@ class PyNime:
                 season=season,
                 synopsis=synopsis,
                 genres=genres,
-                released=released,
                 status=status,
                 image_url=image_url
             )
