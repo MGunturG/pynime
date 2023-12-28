@@ -18,11 +18,11 @@ from pynimeapi.downloader.http_downloader import HTTPDownloader
 
 
 class PyNime:
-    def __init__(self, base_url: str = "https://gogoanimeapp.com"):
+    def __init__(self, base_url: str = "https://anitaku.to"):
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
-        return "0.1.57"
+        return "0.1.58"
 
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
@@ -75,14 +75,16 @@ class PyNime:
             title = info_body.find("h1").text.strip()
             season = other_info[0].text.replace("\n", "").replace("Type: ", "")
             synopsis = other_info[1].text.replace("\n", "")
-
-            # look for genres
-            genres = [] # empty list
-            pattern_genres = re.compile(r'Genre:\s*(.*)$')
-            match_genres = pattern_genres.search(other_info[3].text.replace("\n", ""))
             
-            if match_genres:
-                genres = match_genres.group(1).split(', ')
+            # look for genres
+            # Anitaku not giving anime genres detail. 
+
+            # genres = [] # empty list
+            # pattern_genres = re.compile(r'Genre:\s*(.*)$')
+            # match_genres = pattern_genres.search(other_info[3].text.replace("\n", ""))
+            
+            # if match_genres:
+                # genres = match_genres.group(1).split(', ')
 
 
             status = other_info[4].text.replace("\n", "").replace("Status: ", "")
@@ -92,7 +94,7 @@ class PyNime:
                 title=title,
                 season=season,
                 synopsis=synopsis,
-                genres=genres,
+                # genres=genres,
                 status=status,
                 image_url=image_url
             )

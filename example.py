@@ -1,7 +1,7 @@
 from pynimeapi import PyNime
 
 # Init the API
-api = PyNime(base_url="https://gogoanimeapp.com")
+api = PyNime(base_url="https://anitaku.to")
 
 # Search an anime
 anime_title = input("Input anime title: ")
@@ -23,7 +23,10 @@ anime_details = api.get_anime_details(anime_category_url=search_result[anime_sel
 print(anime_details.title)
 print(anime_details.season)
 print(anime_details.synopsis)
-print(anime_details.genres)  # output on list data type. Example : ['Comedy', 'Ecchi', 'Slice of Life']
+
+# anitaku not giving anime genres detail
+# print(anime_details.genres)  # output on list data type. Example : ['Comedy', 'Ecchi', 'Slice of Life']
+
 print(anime_details.status)
 print(anime_details.image_url)
 
@@ -58,7 +61,7 @@ Download function is now depreciated, will be fixed in the future
 recent_anime = api.get_recent_release(page=1)
 
 for anime in recent_anime:
-    # print first 20 anime recently uploaded on GoGoAnime homepage
+    # print first 20 anime recently uploaded on GoGoAnime/ homepage
     print(f"{anime.title} [EP : {anime.latest_episode}] [URL : {anime.latest_episode_url}]")
 
 # Get Schedule

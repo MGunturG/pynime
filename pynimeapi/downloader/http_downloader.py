@@ -1,7 +1,5 @@
 import os
 import re
-import sys
-import time
 import requests
 
 class HTTPDownloader:
@@ -13,10 +11,10 @@ class HTTPDownloader:
 		}
 
 	def remove_forbiden_string(self, input_string):
-	    ''' Remove char that forbiden while creating a file such as ? * | etc
-	    '''
-	    new_string = re.sub('[:><?/|* ]+', '', input_string)
-	    return new_string
+		''' Remove char that forbiden while creating a file such as ? * | etc
+		'''
+		new_string = re.sub('[:><?/|* ]+', '', input_string)
+		return new_string
 
 	def progress_bar(self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', print_end = '\r'):
 		''' Make CLI progressbar.

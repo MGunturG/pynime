@@ -20,7 +20,14 @@ The project is a work in progress, not finished yet. But, the code works well, f
 
 For complete code, see `example.py`.
 <p align="center">
-<img src="https://github.com/yoshikuniii/pynime/blob/main/pynimeapi/raw/demo.gif"></p> 
+<img src="https://github.com/yoshikuniii/pynime/blob/main/pynimeapi/raw/demo.gif"></p>
+
+## How To Install?
+Minimum Python version 3.8+
+It will install the dependencies automatically.
+```sh
+pip install git+https://github.com/yoshikuniii/pynime.git
+```
 
 ## 1. Initialize the API
 
@@ -28,10 +35,10 @@ First, you need to initialize the PyNime class.
 
 ```Python
 from pynimeapi import PyNime
-api = PyNime(base_url = "https://gogoanimeapp.com")
+api = PyNime(base_url = "https://anitaku.to")
 ```
 
-> **Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://gogoanimeapp.com  
+> **Note:** GoGoAnime often change their domain, you can change the `base_url` if they change it. Otherwise, leave it blank. The default URL will refer to https://anitaku.to/. More info visit https://gogotaku.info/
 
 ## 2. Search an Anime
 
