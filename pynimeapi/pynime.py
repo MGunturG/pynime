@@ -9,6 +9,7 @@ import requests
 import concurrent.futures
 
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 from pynimeapi.classes.datatype import *
 from pynimeapi.schedule import GetSchedule
@@ -188,10 +189,21 @@ class PyNime:
         downloader = HTTPDownloader()
         playlist = m3u8.load(stream_url)
 
+        stream_url_parsed = urlparse(stream_url)
+        base_stream_url = f"{stream_url_parsed.scheme}://{stream_url_parsed.netloc}{os.path.split(stream_url_parsed.path)[0]}"
+
+        # check if HLS file contains ts file.
+        ts_name, ts_extension = os.path.splitext(playlist.segments[0].uri)
+        if ts_extension == ".ts":
+            # continue
+            pass
+        else:
+            return None
+
         # create list to store video urls
         playlist_segments = list()
         for url in playlist.segments:
-            playlist_segments.append(url.uri)
+            playlist_segments.append(base_stream_url + "/" + url.uri)
 
         filename = f"{filename}.ts"  # file will be saved as ts file
 
