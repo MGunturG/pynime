@@ -10,12 +10,11 @@ class SearchResultObj:
 class AnimeDetailsObj:
 	def __init__(
 		self, season: str, title: str,
-		synopsis: str, genres: list, status: str, 
+		synopsis: str, status: str, 
 		image_url: str):
 		self.title = title
 		self.season = season
 		self.synopsis = synopsis
-		self.genres = genres
 		self.status = status
 		self.image_url = image_url
 

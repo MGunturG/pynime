@@ -95,7 +95,6 @@ class PyNime:
                 title=title,
                 season=season,
                 synopsis=synopsis,
-                # genres=genres,
                 status=status,
                 image_url=image_url
             )
