@@ -23,7 +23,7 @@ class PyNime:
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
-        return "0.1.58"
+        return "0.1.59"
 
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
