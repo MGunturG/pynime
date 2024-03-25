@@ -32,7 +32,7 @@ class PyNime:
         """
         try:
             anime_result = []
-            r = requests.get(f"https://ajax.gogo-load.com/site/loadAjaxSearch?keyword={anime_title}")
+            r = requests.get(f"https://ajax.gogocdn.net/site/loadAjaxSearch?keyword={anime_title}")
 
             if r:
                 title = [_.group(1) for _ in re.finditer(r"<\\/div>(.*?)<\\/a><\\/div>", r.text)]
@@ -114,7 +114,7 @@ class PyNime:
             r = requests.get(anime_category_url, verify=certifi.where())
             anime_id = re.search(r'<input.+?value="(\d+)" id="movie_id"', r.text).group(1)
 
-            res = requests.get("https://ajax.gogo-load.com/ajax/load-list-episode",
+            res = requests.get("https://ajax.gogocdn.net/ajax/load-list-episode",
                                params={"ep_start": 0, "ep_end": 9999, "id": anime_id}, )
 
             soup = BeautifulSoup(res.content, "lxml")
@@ -267,7 +267,7 @@ class PyNime:
         try:
             recent_release_list = list()
             response = requests.get(
-                f"https://ajax.gogo-load.com/ajax/page-recent-release.html?page={page}", verify=certifi.where()).text
+                f"https://ajax.gogocdn.net/ajax/page-recent-release.html?page={page}", verify=certifi.where()).text
 
             regex_filter = r"<li>\s*\n.*\n.*<a\shref=[\"'](?P<href>.*?-episode-(?P<episode>\d+))[\"']\s*title=[\"'](?P<title>.*?)[\"']>\n.*<img\ssrc=[\"'](?P<img>.*?)[\"']"
 
