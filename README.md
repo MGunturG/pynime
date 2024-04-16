@@ -5,6 +5,10 @@ PyNime is a (simple) straightforward Python3 script to scrape GoGoAnime using Py
 
 The project is a work in progress, not finished yet. But, the code works well, feel free to take part of the code.
 
+## Status
+
+Please visit [PyNime Benchmark](https://github.com/yoshikuniii/pynime_benchmark) for API status.
+
 ## What Can be Done?
 
 - [Search anime by title](https://github.com/yoshikuniii/pynime#1-initialize-the-api)
