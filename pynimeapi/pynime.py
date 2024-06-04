@@ -86,6 +86,7 @@ class PyNime:
 
             if match_genres:
                 genres = match_genres.group(1).split(', ')
+            genres = ', '.join(genres)
 
             status = other_info[4].text.replace("\n", "").replace("Status: ", "")
             image_url = image_url
@@ -95,6 +96,7 @@ class PyNime:
                 season=season,
                 synopsis=synopsis,
                 status=status,
+                genres=genres,
                 image_url=image_url
             )
 

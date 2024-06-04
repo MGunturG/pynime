@@ -22,11 +22,8 @@ anime_selection = int(input("Select anime: "))
 anime_details = api.get_anime_details(anime_category_url=search_result[anime_selection].category_url)
 print(anime_details.title)
 print(anime_details.season)
+print(anime_details.genres)
 print(anime_details.synopsis)
-
-# anitaku not giving anime genres detail
-# print(anime_details.genres)  # output on list data type. Example : ['Comedy', 'Ecchi', 'Slice of Life']
-
 print(anime_details.status)
 print(anime_details.image_url)
 
