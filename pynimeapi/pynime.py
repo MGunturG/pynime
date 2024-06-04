@@ -23,7 +23,7 @@ class PyNime:
         self.baseURL = base_url  # domain of GoGoAnime. please update regularly
 
     def version(self):
-        return "0.1.60"
+        return "0.1.61"
 
     def search_anime(self, anime_title: str) -> SearchResultObj:
         """
@@ -75,18 +75,17 @@ class PyNime:
 
             title = info_body.find("h1").text.strip()
             season = other_info[0].text.replace("\n", "").replace("Type: ", "")
-            synopsis = other_info[1].text.replace("\n", "")
-            
+
+            # find description/synopsis
+            synopsis = info_body.find("div", {"class":"description"}).text.replace("\n","").replace("\r","")
+
             # look for genres
-            # Anitaku not giving anime genres detail. 
+            genres = [] # empty list
+            pattern_genres = re.compile(r'Genre:\s*(.*)$')
+            match_genres = pattern_genres.search(other_info[2].text.replace("\n", ""))
 
-            # genres = [] # empty list
-            # pattern_genres = re.compile(r'Genre:\s*(.*)$')
-            # match_genres = pattern_genres.search(other_info[3].text.replace("\n", ""))
-            
-            # if match_genres:
-                # genres = match_genres.group(1).split(', ')
-
+            if match_genres:
+                genres = match_genres.group(1).split(', ')
 
             status = other_info[4].text.replace("\n", "").replace("Status: ", "")
             image_url = image_url
